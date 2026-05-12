@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BDH Store</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial,sans-serif;
+    }
+
+    body{
+      background:#f5f5f5;
+      color:#222;
+    }
+
+    header{
+      background:#ff6600;
+      color:white;
+      text-align:center;
+      padding:20px;
+    }
+
+    nav{
+      background:#222;
+      padding:12px;
+      text-align:center;
+    }
+
+    nav a{
+      color:white;
+      text-decoration:none;
+      margin:0 15px;
+      font-size:18px;
+    }
+
+    .hero{
+      background:white;
+      padding:60px 20px;
+      text-align:center;
+    }
+
+    .hero h1{
+      font-size:42px;
+      margin-bottom:15px;
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+      padding:40px;
+    }
+
+    .card{
+      background:white;
+      border-radius:12px;
+      padding:20px;
+      text-align:center;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .card img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      border-radius:10px;
+    }
+
+    .card h3{
+      margin:15px 0 10px;
+    }
+
+    .card button,
+    .admin-btn{
+      background:#ff6600;
+      color:white;
+      border:none;
+      padding:10px 18px;
+      border-radius:6px;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    footer{
+      background:#222;
+      color:white;
+      text-align:center;
+      padding:20px;
+      margin-top:30px;
+    }
+
+    #adminToggle{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:#ff6600;
+      color:white;
+      border:none;
+      padding:14px 18px;
+      border-radius:10px;
+      cursor:pointer;
+      z-index:999;
+    }
+
+    #adminPanel{
+      display:none;
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:90%;
+      max-width:500px;
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 0 20px rgba(0,0,0,0.3);
+      z-index:1000;
+      max-height:90vh;
+      overflow:auto;
+    }
+
+    #adminPanel input{
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+    }
+
+    .admin-product{
+      border:1px solid #ddd;
+      padding:10px;
+      margin-top:10px;
+      border-radius:10px;
+    }
+
+    .delete-btn{
+      background:red;
+      color:white;
+      border:none;
+      padding:8px 14px;
+      border-radius:6px;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>BDH Store</h1>
+  <p>Best Products at Best Price</p>
+</header>
+
+<nav>
+  <a href="#">Home</a>
+  <a href="#">Products</a>
+  <a href="#">Contact</a>
+</nav>
+
+<section class="hero">
+  <h1>Welcome to BDH Store</h1>
+  <p>Your trusted shopping destination</p>
+</section>
+
+<section class="products" id="products">
+
+  <div class="card">
+    <img src="https://via.placeholder.com/300">
+    <h3>Product 1</h3>
+    <p>₹499</p>
+    <button>Buy Now</button>
+  </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/300">
+    <h3>Product 2</h3>
+    <p>₹999</p>
+    <button>Buy Now</button>
+  </div>
+
+</section>
+
+<footer>
+  <p>© 2026 BDH Store</p>
+</footer>
+
+<button id="adminToggle" onclick="openAdmin()">
+  Admin
+</button>
+
+<div id="adminPanel">
+
+  <h2>Admin Login</h2>
+
+  <div id="loginArea">
+    <input type="password" id="adminPassword" placeholder="Enter Password">
+    <button class="admin-btn" onclick="login()">
+      Login
+    </button>
+  </div>
+
+  <div id="adminArea" style="display:none;">
+
+    <input type="text" id="productName" placeholder="Product Name">
+
+    <input type="text" id="productPrice" placeholder="Product Price">
+
+    <input type="text" id="productImage" placeholder="Image URL">
+
+    <button class="admin-btn" onclick="addProduct()">
+      Add Product
+    </button>
+
+    <div id="productList"></div>
+
+  </div>
+
+  <button class="admin-btn" onclick="closeAdmin()">
+    Close
+  </button>
+
+</div>
+
+<script>
+
+const ADMIN_PASSWORD = "admin123";
+
+function openAdmin(){
+  document.getElementById("adminPanel").style.display = "block";
+}
+
+function closeAdmin(){
+  document.getElementById("adminPanel").style.display = "none";
+}
+
+function login(){
+
+  const pass = document.getElementById("adminPassword").value;
+
+  if(pass === ADMIN_PASSWORD){
+
+    document.getElementById("loginArea").style.display = "none";
+
+    document.getElementById("adminArea").style.display = "block";
+
+    loadProducts();
+
+  }else{
+    alert("Wrong Password");
+  }
+
+}
+
+function getProducts(){
+  return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+function saveProducts(products){
+  localStorage.setItem("products", JSON.stringify(products));
+}
+
+function addProduct(){
+
+  const name = document.getElementById("productName").value;
+
+  const price = document.getElementById("productPrice").value;
+
+  const image = document.getElementById("productImage").value;
+
+  if(!name || !price || !image){
+    alert("Fill all fields");
+    return;
+  }
+
+  const products = getProducts();
+
+  products.push({
+    name,
+    price,
+    image
+  });
+
+  saveProducts(products);
+
+  renderProducts();
+
+  loadProducts();
+
+}
+
+function renderProducts(){
+
+  const container = document.getElementById("products");
+
+  document.querySelectorAll(".dynamic-product").forEach(el => el.remove());
+
+  const products = getProducts();
+
+  products.forEach((product) => {
+
+    container.innerHTML += `
+      <div class="card dynamic-product">
+        <img src="${product.image}">
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button>Buy Now</button>
+      </div>
+    `;
+
+  });
+
+}
+
+function loadProducts(){
+
+  const products = getProducts();
+
+  const list = document.getElementById("productList");
+
+  list.innerHTML = "";
+
+  products.forEach((product,index) => {
+
+    list.innerHTML += `
+      <div class="admin-product">
+
+        <img src="${product.image}" width="80">
+
+        <h3>${product.name}</h3>
+
+        <p>₹${product.price}</p>
+
+        <button class="delete-btn"
+        onclick="deleteProduct(${index})">
+          Delete
+        </button>
+
+      </div>
+    `;
+
+  });
+
+}
+
+function deleteProduct(index){
+
+  const products = getProducts();
+
+  products.splice(index,1);
+
+  saveProducts(products);
+
+  renderProducts();
+
+  loadProducts();
+
+}
+
+window.onload = function(){
+  renderProducts();
+}
+
+</script>
+
+</body>
+</html>
