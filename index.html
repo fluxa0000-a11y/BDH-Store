@@ -6,14 +6,14 @@
     <title>Pocket Scientific Calculator</title>
     <style>
         :root {
-            --bg: #000000;          /* Pure premium black background like screenshot */
+            --bg: #000000;          
             --card: #0a0e14;
             --blue: #00b7ff;
             --orange: #ff9800;
-            --btn-dark: #1c1c1e;    /* Apple/Android standard dark gray button */
+            --btn-dark: #1c1c1e;    
             --btn-light: #2c2c2e;
             --text-main: #ffffff;
-            --text-dim: #7d7d82;    /* Light gray color for preview */
+            --text-dim: #7d7d82;    
         }
 
         * {
@@ -109,8 +109,8 @@
             background: transparent;
             border: none;
             color: var(--text-dim);
-            padding: 8px;
-            font-size: 0.8rem;
+            padding: 10px;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             border-radius: 10px;
@@ -122,7 +122,7 @@
             color: #fff;
         }
 
-        /* DUAL DISPLAY AREA (Matches Screenshot Concept) */
+        /* DUAL DISPLAY AREA */
         .display-box {
             padding: 10px 15px;
             text-align: right;
@@ -133,7 +133,6 @@
             margin-bottom: 20px;
         }
 
-        /* Main live expression (Bada text) */
         #expression {
             font-size: 3.2rem;
             font-weight: 400;
@@ -145,7 +144,6 @@
             margin-bottom: 5px;
         }
 
-        /* Live Light Preview Answer (Chota text neeche) */
         #preview {
             font-size: 1.8rem;
             color: var(--text-dim);
@@ -157,13 +155,13 @@
         .buttons {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px; /* Uniform standard gaps */
+            gap: 12px;
         }
 
         .buttons button {
-            aspect-ratio: 1; /* Makes them perfectly circular/square symmetrical */
+            aspect-ratio: 1; 
             border: none;
-            border-radius: 50%; /* Rounded circular structure like modern devices */
+            border-radius: 50%; 
             font-size: 1.4rem;
             font-weight: 500;
             color: white;
@@ -180,10 +178,9 @@
             filter: brightness(1.4);
         }
 
-        /* Highlight classes */
         .buttons button.operator {
             background: var(--btn-light);
-            color: var(--orange); /* Clean highlighted operators */
+            color: var(--orange); 
             font-size: 1.6rem;
         }
 
@@ -197,13 +194,26 @@
             color: #ff453a;
         }
 
-        /* Hidden scientific buttons container profile */
+        /* Hidden scientific buttons toggles */
         .buttons button.sci-btn {
             display: none;
             background: #121214;
             font-size: 1.1rem;
             color: #00b7ff;
         }
+
+        /* GRAPH PANEL CANVAS LAYOUT */
+        #graphPanel {
+            display: none;
+            background: #11151c;
+            border: 1px solid var(--btn-dark);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #graphPanel h3 { font-size: 1rem; color: var(--blue); margin-bottom: 8px; font-weight: 500; }
+        #graphCanvas { background: #ffffff; border-radius: 8px; width: 100%; height: 180px; display: block; }
 
         /* HISTORY LAYOUT */
         .history {
@@ -240,6 +250,7 @@
             text-align: right;
             display: flex;
             flex-direction: column;
+            cursor: pointer;
         }
 
         .hist-expr { color: var(--text-dim); font-size: 0.85rem; }
@@ -284,11 +295,16 @@
         <div class="mode">
             <button id="btn-norm" class="active" onclick="changeMode('normal')">NORMAL</button>
             <button id="btn-sci" onclick="changeMode('scientific')">SCIENTIFIC</button>
-            <button id="btn-eng" onclick="changeMode('engineering')">ENGINEERING</button>
+            <button id="btn-graph" onclick="changeMode('graph')">GRAPH</button>
+        </div>
+
+        <div id="graphPanel">
+            <h3>Live Equation Graph Visualizer</h3>
+            <canvas id="graphCanvas" width="380" height="180"></canvas>
         </div>
 
         <div class="display-box">
-            <div id="expression"></div>
+            <div id="expression">0</div>
             <div id="preview"></div>
         </div>
 
@@ -296,24 +312,24 @@
             <button onclick="inputDigit('7')">7</button>
             <button onclick="inputDigit('8')">8</button>
             <button onclick="inputDigit('9')">9</button>
-            <button class="operator" onclick="inputDigit('/')">÷</button>
-            <button class="operator sci-match" onclick="inputDigit('Math.PI')">π</button>
+            <button class="operator" onclick="inputOperator('/')">÷</button>
+            <button class="operator sci-match" onclick="inputDigit('π')">π</button>
 
             <button onclick="inputDigit('4')">4</button>
             <button onclick="inputDigit('5')">5</button>
             <button onclick="inputDigit('6')">6</button>
-            <button class="operator" onclick="inputDigit('*')">×</button>
-            <button class="operator sci-match" onclick="inputDigit('Math.E')">e</button>
+            <button class="operator" onclick="inputOperator('*')">×</button>
+            <button class="operator sci-match" onclick="inputDigit('e')">e</button>
 
             <button onclick="inputDigit('1')">1</button>
             <button onclick="inputDigit('2')">2</button>
             <button onclick="inputDigit('3')">3</button>
-            <button class="operator" onclick="inputDigit('-')">−</button>
+            <button class="operator" onclick="inputOperator('-')">−</button>
             <button class="operator sci-match" onclick="runFunc('sin')">sin</button>
 
             <button onclick="inputDigit('0')">0</button>
             <button onclick="inputDigit('.')">.</button>
-            <button class="operator" onclick="inputDigit('+')">+</button>
+            <button class="operator" onclick="inputOperator('+')">+</button>
             <button class="equal" onclick="calculate()">=</button>
             <button class="operator sci-match" onclick="runFunc('cos')">cos</button>
 
@@ -323,35 +339,35 @@
             <button class="operator" onclick="runFunc('sqrt')">√</button>
             <button class="operator sci-match" onclick="runFunc('tan')">tan</button>
 
-            <button class="sci-btn" onclick="runFunc('square')">x²</button>
-            <button class="sci-btn" onclick="runFunc('cube')">x³</button>
+            <button class="sci-btn" onclick="inputOperator('**2')">x²</button>
+            <button class="sci-btn" onclick="inputOperator('**3')">x³</button>
             <button class="sci-btn" onclick="runFunc('log')">log</button>
             <button class="sci-btn" onclick="runFunc('ln')">ln</button>
-            <button class="sci-btn" onclick="runFunc('factorial')">n!</button>
+            <button class="sci-btn" onclick="runSpecial('factorial')">n!</button>
 
-            <button class="sci-btn" onclick="runFunc('inverse')">INV</button>
+            <button class="sci-btn" onclick="runSpecial('inverse')">INV</button>
             <button class="sci-btn" onclick="alert('Hyperbolic activated')">hyp</button>
-            <button class="sci-btn" onclick="inputDigit('-')">(-)</button>
-            <button class="sci-btn" onclick="inputDigit(memoryValue)">RCL</button>
-            <button class="sci-btn" onclick="runFunc('eng')">ENG</button>
+            <button class="sci-btn" onclick="inputOperator('-')">(-)</button>
+            <button class="sci-btn" onclick="loadMemory()">RCL</button>
+            <button class="sci-btn" onclick="inputDigit('x')">x</button>
 
-            <button class="sci-btn" onclick="inputDigit('%')">%</button>
-            <button class="sci-btn" onclick="inputDigit('**')">^</button>
-            <button class="sci-btn" onclick="inputDigit('*10**')">EXP</button>
-            <button class="sci-btn" onclick="inputDigit('Math.abs(')">abs</button>
-            <button class="sci-btn" onclick="runFunc('rand')">Rand</button>
+            <button class="sci-btn" onclick="inputOperator('%')">%</button>
+            <button class="sci-btn" onclick="inputOperator('^')">^</button>
+            <button class="sci-btn" onclick="inputOperator('*10**')">EXP</button>
+            <button class="sci-btn" onclick="runFunc('abs')">abs</button>
+            <button class="sci-btn" onclick="runSpecial('rand')">Rand</button>
 
             <button class="sci-btn" onclick="runFunc('sinh')">sinh</button>
             <button class="sci-btn" onclick="runFunc('cosh')">cosh</button>
             <button class="sci-btn" onclick="runFunc('tanh')">tanh</button>
-            <button class="sci-btn" onclick="inputDigit('Math.asin(')">asin</button>
-            <button class="sci-btn" onclick="inputDigit('Math.acos(')">acos</button>
+            <button class="sci-btn" onclick="runFunc('asin')">asin</button>
+            <button class="sci-btn" onclick="runFunc('acos')">acos</button>
 
-            <button class="sci-btn" onclick="inputDigit('Math.atan(')">atan</button>
-            <button class="sci-btn" onclick="inputDigit('Math.pow(10,')">10^x</button>
-            <button class="sci-btn" onclick="inputDigit('Math.exp(')">e^x</button>
-            <button class="sci-btn" onclick="inputDigit('Math.cbrt(')">3√x</button>
-            <button class="sci-btn" onclick="inputDigit('Math.floor(')">INT</button>
+            <button class="sci-btn" onclick="runFunc('atan')">atan</button>
+            <button class="sci-btn" onclick="runFunc('pow10')">10^x</button>
+            <button class="sci-btn" onclick="runFunc('expex')">e^x</button>
+            <button class="sci-btn" onclick="runFunc('cbrt')">3√x</button>
+            <button class="sci-btn" onclick="runFunc('floor')">INT</button>
         </div>
 
         <div class="history">
@@ -372,7 +388,6 @@
         let memoryValue = 0;
         let currentMode = 'normal';
 
-        // Initial default display set up
         exprDiv.innerText = "0";
 
         function inputDigit(val) {
@@ -384,29 +399,129 @@
             updateLivePreview();
         }
 
+        function inputOperator(op) {
+            let current = exprDiv.innerText;
+            let lastChar = current.slice(-1);
+            if(["+", "-", "*", "/", "%", "^"].includes(lastChar)) {
+                exprDiv.innerText = current.slice(0, -1) + op;
+            } else {
+                if(exprDiv.innerText === "0" && op === "-") {
+                    exprDiv.innerText = op;
+                } else {
+                    exprDiv.innerText += op;
+                }
+            }
+            updateLivePreview();
+        }
+
+        function runFunc(type) {
+            let current = exprDiv.innerText;
+            if(current === "0" || current === "") {
+                exprDiv.innerText = type + "(";
+            } else {
+                let lastChar = current.slice(-1);
+                if(["+", "-", "*", "/", "(", "%", "^"].includes(lastChar)) {
+                    exprDiv.innerText += type + "(";
+                } else {
+                    exprDiv.innerText += "*" + type + "(";
+                }
+            }
+            updateLivePreview();
+        }
+
+        function runSpecial(action) {
+            if(action === 'inverse') {
+                exprDiv.innerText = "1/(" + exprDiv.innerText + ")";
+            } else if(action === 'rand') {
+                inputDigit(Math.random().toFixed(4));
+            } else if(action === 'factorial') {
+                exprDiv.innerText += "!";
+            }
+            updateLivePreview();
+        }
+
+        function loadMemory() {
+            if(exprDiv.innerText === "0") exprDiv.innerText = memoryValue;
+            else exprDiv.innerText += memoryValue;
+            updateLivePreview();
+        }
+
         function clearDisplay() {
             exprDiv.innerText = "0";
             previewDiv.innerText = "";
+            if(currentMode === 'graph') { drawLiveGraph("0"); }
         }
 
-        // Realtime live calculation setup (Like your screenshot 24 value)
+        function cleanAndParse(str, isForGraph = false) {
+            let parsed = str.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+            parsed = parsed.replace(/π/g, "Math.PI").replace(/e/g, "Math.E");
+            
+            let ob = (parsed.match(/\(/g) || []).length;
+            let cb = (parsed.match(/\)/g) || []).length;
+            while(ob > cb) { parsed += ")"; cb++; }
+
+            if(parsed.includes("!")) {
+                parsed = parsed.replace(/(\d+)!/g, function(match, num) {
+                    let f = 1; for(let i=1; i<=parseInt(num); i++) f *= i; return f;
+                });
+            }
+
+            if(isForGraph) {
+                parsed = parsed.replace(/sin\(/g, "Math.sin(");
+                parsed = parsed.replace(/cos\(/g, "Math.cos(");
+                parsed = parsed.replace(/tan\(/g, "Math.tan(");
+            } else {
+                parsed = parsed.replace(/sin\(/g, "Math.sin(" + Math.PI + "/180*");
+                parsed = parsed.replace(/cos\(/g, "Math.cos(" + Math.PI + "/180*");
+                parsed = parsed.replace(/tan\(/g, "Math.tan(" + Math.PI + "/180*");
+            }
+            
+            parsed = parsed.replace(/sinh\(/g, "Math.sinh(");
+            parsed = parsed.replace(/cosh\(/g, "Math.cosh(");
+            parsed = parsed.replace(/tanh\(/g, "Math.tanh(");
+            parsed = parsed.replace(/asin\(/g, "Math.asin(");
+            parsed = parsed.replace(/acos\(/g, "Math.acos(");
+            parsed = parsed.replace(/atan\(/g, "Math.atan(");
+
+            parsed = parsed.replace(/log\(/g, "Math.log10(");
+            parsed = parsed.replace(/ln\(/g, "Math.log(");
+            parsed = parsed.replace(/sqrt\(/g, "Math.sqrt(");
+            parsed = parsed.replace(/cbrt\(/g, "Math.cbrt(");
+            parsed = parsed.replace(/abs\(/g, "Math.abs(");
+            parsed = parsed.replace(/floor\(/g, "Math.floor(");
+            parsed = parsed.replace(/pow10\(/g, "Math.pow(10,");
+            parsed = parsed.replace(/expex\(/g, "Math.exp(");
+
+            if(parsed.includes("^")) {
+                let parts = parsed.split("^");
+                parsed = `Math.pow(${parts[0]},${parts[1]})`;
+            }
+            return parsed;
+        }
+
         function updateLivePreview() {
             try {
                 let currentExpr = exprDiv.innerText;
-                if (!currentExpr || currentExpr === "0") {
+                
+                if(currentExpr.includes('x')) {
+                    if(currentMode === 'graph') { drawLiveGraph(currentExpr); }
+                    previewDiv.innerText = "Graph Mode";
+                    return;
+                }
+
+                if (!currentExpr || currentExpr === "0" || currentExpr.endsWith("(")) {
                     previewDiv.innerText = "";
                     return;
                 }
-                
-                // Perform quick passive assessment
-                let evaluation = eval(currentExpr);
-                if (evaluation !== undefined && evaluation !== NaN && currentExpr !== evaluation.toString()) {
-                    previewDiv.innerText = evaluation;
+
+                let finalString = cleanAndParse(currentExpr, false);
+                let evaluation = eval(finalString);
+                if (evaluation !== undefined && !isNaN(evaluation)) {
+                    previewDiv.innerText = Number.isInteger(evaluation) ? evaluation : parseFloat(evaluation.toFixed(6));
                 } else {
                     previewDiv.innerText = "";
                 }
             } catch (e) {
-                // Keep blank if statement syntax is incomplete while typing
                 previewDiv.innerText = "";
             }
         }
@@ -415,60 +530,78 @@
             try {
                 let currentExpr = exprDiv.innerText;
                 if(!currentExpr || currentExpr === "0") return;
-                
-                let finalOutput = eval(currentExpr);
-                
-                if (currentMode === 'engineering') {
-                    finalOutput = finalOutput.toExponential(4);
+
+                if(currentExpr.includes('x')) {
+                    if(currentMode === 'graph') { drawLiveGraph(currentExpr); }
+                    return;
                 }
+                
+                let finalString = cleanAndParse(currentExpr, false);
+                let finalOutput = eval(finalString);
+                
+                if(finalOutput === undefined || isNaN(finalOutput)) throw new Error();
+                finalOutput = Number.isInteger(finalOutput) ? finalOutput : parseFloat(finalOutput.toFixed(8));
+
+                memoryValue = finalOutput;
 
                 saveHistory({ expr: currentExpr, res: "= " + finalOutput });
                 exprDiv.innerText = finalOutput;
-                previewDiv.innerText = ""; // Clear preview since value shifted to main active line
+                previewDiv.innerText = "";
             } catch (e) {
                 exprDiv.innerText = "Error";
                 previewDiv.innerText = "";
+                setTimeout(() => { exprDiv.innerText = "0"; }, 1500);
             }
         }
 
-        function runFunc(type) {
-            try {
-                let currentVal = eval(exprDiv.innerText) || 0;
-                let output;
+        function drawLiveGraph(equation) {
+            const canvas = document.getElementById("graphCanvas");
+            const ctx = canvas.getContext("2d");
+            if(!canvas) return;
+            
+            let width = canvas.width;
+            let height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
 
-                switch(type) {
-                    case 'sqrt': output = Math.sqrt(currentVal); break;
-                    case 'sin': output = Math.sin(currentVal); break;
-                    case 'cos': output = Math.cos(currentVal); break;
-                    case 'tan': output = Math.tan(currentVal); break;
-                    case 'sinh': output = Math.sinh(currentVal); break;
-                    case 'cosh': output = Math.cosh(currentVal); break;
-                    case 'tanh': output = Math.tanh(currentVal); break;
-                    case 'square': output = currentVal * currentVal; break;
-                    case 'cube': output = currentVal * currentVal * currentVal; break;
-                    case 'log': output = Math.log10(currentVal); break;
-                    case 'ln': output = Math.log(currentVal); break;
-                    case 'inverse': output = 1 / currentVal; break;
-                    case 'rand': output = Math.random(); break;
-                    case 'eng': output = currentVal.toExponential(4); break;
-                    case 'factorial':
-                        if (currentVal < 0) throw "Error";
-                        let fact = 1;
-                        for (let i = 1; i <= Math.floor(currentVal); i++) fact *= i;
-                        output = fact;
-                        break;
-                }
+            ctx.strokeStyle = "#d1d1d6"; 
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2); 
+            ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height); 
+            ctx.stroke();
 
-                saveHistory({ expr: `${type}(${currentVal})`, res: "= " + output });
-                exprDiv.innerText = output;
-                previewDiv.innerText = "";
-            } catch(err) {
-                exprDiv.innerText = "Error";
-                previewDiv.innerText = "";
+            if(!equation || equation === "0") return;
+
+            ctx.strokeStyle = "#00b7ff"; 
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            let initial = true;
+            let scale = 25; 
+
+            for(let pX = 0; pX < width; pX++) {
+                let x = (pX - width / 2) / scale;
+                try {
+                    let mathSafeEq = equation.replace(/x/g, `(${x})`);
+                    let evalReady = cleanAndParse(mathSafeEq, true);
+                    let y = eval(evalReady);
+                    
+                    let pY = (height / 2) - (y * scale);
+
+                    if(!isNaN(pY) && isFinite(pY)) {
+                        if(initial) { 
+                            ctx.moveTo(pX, pY); 
+                            initial = false; 
+                        } else { 
+                            ctx.lineTo(pX, pY); 
+                        }
+                    }
+                } catch(e){}
             }
+            ctx.stroke();
         }
 
-        /* LOCALSTORAGE OPERATIONAL CONTROLS */
         function saveHistory(item) {
             let history = JSON.parse(localStorage.getItem("fluxaaCalcHistory")) || [];
             history.unshift(item);
@@ -482,11 +615,12 @@
             history.forEach(entry => {
                 let div = document.createElement("div");
                 div.className = "history-item";
-                if(entry && entry.expr) {
-                    div.innerHTML = `<span class="hist-expr">${entry.expr}</span><span class="hist-res">${entry.res}</span>`;
-                } else {
-                    div.innerText = entry;
-                }
+                div.innerHTML = `<span class="hist-expr">${entry.expr}</span><span class="hist-res">${entry.res}</span>`;
+                
+                div.onclick = () => {
+                    exprDiv.innerText = entry.expr;
+                    updateLivePreview();
+                };
                 historyList.appendChild(div);
             });
         }
@@ -496,25 +630,31 @@
             loadHistory();
         }
 
-        /* MODULAR TRANSITIONS SETUP */
         function changeMode(mode) {
             currentMode = mode;
             document.querySelectorAll(".mode button").forEach(b => b.classList.remove("active"));
             
             if(mode === 'normal') document.getElementById("btn-norm").classList.add("active");
             if(mode === 'scientific') document.getElementById("btn-sci").classList.add("active");
-            if(mode === 'engineering') document.getElementById("btn-eng").classList.add("active");
+            if(mode === 'graph') document.getElementById("btn-graph").classList.add("active");
 
             const sciButtons = document.querySelectorAll(".sci-btn");
             const sciMatches = document.querySelectorAll(".sci-match");
+            const graphPanel = document.getElementById("graphPanel");
 
             if (mode === 'normal') {
                 sciButtons.forEach(btn => btn.style.display = "none");
                 sciMatches.forEach(btn => btn.style.display = "flex");
-            } else {
-                // Reveal complete technical panel configurations
+                graphPanel.style.display = "none";
+            } else if (mode === 'graph') {
                 sciButtons.forEach(btn => btn.style.display = "flex");
                 sciMatches.forEach(btn => btn.style.display = "flex");
+                graphPanel.style.display = "block";
+                drawLiveGraph(exprDiv.innerText);
+            } else {
+                sciButtons.forEach(btn => btn.style.display = "flex");
+                sciMatches.forEach(btn => btn.style.display = "flex");
+                graphPanel.style.display = "none";
             }
             updateLivePreview();
         }
