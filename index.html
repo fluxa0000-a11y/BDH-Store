@@ -1,372 +1,406 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BDH Store</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pocket Scientific Calculator</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --card: #0a0e14;
+            --blue: #00b7ff;
+            --orange: #ff9800;
+            --btn-dark: #1c1c1e;
+            --btn-light: #2c2c2e;
+            --text-main: #ffffff;
+            --text-dim: #8e8e93;
+        }
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,sans-serif;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-    body{
-      background:#f5f5f5;
-      color:#222;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
 
-    header{
-      background:#ff6600;
-      color:white;
-      text-align:center;
-      padding:20px;
-    }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid #1f293d;
+        }
 
-    nav{
-      background:#222;
-      padding:12px;
-      text-align:center;
-    }
+        .display {
+            padding: 20px 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
 
-    nav a{
-      color:white;
-      text-decoration:none;
-      margin:0 15px;
-      font-size:18px;
-    }
+        #preview {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            min-height: 1.5rem;
+        }
 
-    .hero{
-      background:white;
-      padding:60px 20px;
-      text-align:center;
-    }
+        #expression {
+            font-size: 2.8rem;
+            font-weight: 300;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
 
-    .hero h1{
-      font-size:42px;
-      margin-bottom:15px;
-    }
+        .mode-selector {
+            display: flex;
+            background: #121824;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #1f293d;
+        }
 
-    .products{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:20px;
-      padding:40px;
-    }
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
 
-    .card{
-      background:white;
-      border-radius:12px;
-      padding:20px;
-      text-align:center;
-      box-shadow:0 4px 10px rgba(0,0,0,0.1);
-    }
+        .mode-btn.active {
+            background: var(--blue);
+            color: #000;
+        }
 
-    .card img{
-      width:100%;
-      height:220px;
-      object-fit:cover;
-      border-radius:10px;
-    }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
 
-    .card h3{
-      margin:15px 0 10px;
-    }
+        .grid.sci-mode {
+            grid-template-columns: repeat(5, 1fr);
+        }
 
-    .card button,
-    .admin-btn{
-      background:#ff6600;
-      color:white;
-      border:none;
-      padding:10px 18px;
-      border-radius:6px;
-      cursor:pointer;
-      margin-top:10px;
-    }
+        button {
+            border: none;
+            background: var(--btn-dark);
+            color: var(--text-main);
+            font-size: 1.5rem;
+            padding: 18px 0;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    footer{
-      background:#222;
-      color:white;
-      text-align:center;
-      padding:20px;
-      margin-top:30px;
-    }
+        button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
 
-    #adminToggle{
-      position:fixed;
-      bottom:20px;
-      right:20px;
-      background:#ff6600;
-      color:white;
-      border:none;
-      padding:14px 18px;
-      border-radius:10px;
-      cursor:pointer;
-      z-index:999;
-    }
+        button.operator { color: var(--blue); background: #12253a; }
+        button.action { color: #ff453a; background: #2c1616; }
+        button.equal { background: var(--orange); color: #000; font-weight: bold; }
+        button.sci { background: #1a1a2e; color: var(--blue); font-size: 1.1rem; }
 
-    #adminPanel{
-      display:none;
-      position:fixed;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      width:90%;
-      max-width:500px;
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      box-shadow:0 0 20px rgba(0,0,0,0.3);
-      z-index:1000;
-      max-height:90vh;
-      overflow:auto;
-    }
+        .hidden { display: none !important; }
 
-    #adminPanel input{
-      width:100%;
-      padding:12px;
-      margin:10px 0;
-    }
+        .history-panel {
+            background: rgba(10,14,20,0.95);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 70px;
+            z-index: 100;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .admin-product{
-      border:1px solid #ddd;
-      padding:10px;
-      margin-top:10px;
-      border-radius:10px;
-    }
+        .history-panel.open { transform: translateY(0); }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item { padding: 12px 0; border-bottom: 1px solid #1f293d; text-align: right; }
+        .hist-expr { color: var(--text-dim); font-size: 1rem; }
+        .hist-res { color: var(--orange); font-size: 1.3rem; font-weight: bold; }
 
-    .delete-btn{
-      background:red;
-      color:white;
-      border:none;
-      padding:8px 14px;
-      border-radius:6px;
-      cursor:pointer;
-      margin-top:10px;
-    }
-
-  </style>
+        /* ADMOB BOX */
+        .admob {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            height: 70px;
+            background: #000;
+            border-top: 1px solid #1c1c1e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-  <h1>BDH Store</h1>
-  <p>Best Products at Best Price</p>
-</header>
+    <div class="container">
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('norm')">Standard</button>
+            <button class="mode-btn" onclick="switchMode('sci')">Scientific</button>
+            <button class="mode-btn" onclick="toggleHistory()">History</button>
+        </div>
 
-<nav>
-  <a href="#">Home</a>
-  <a href="#">Products</a>
-  <a href="#">Contact</a>
-</nav>
+        <div class="display">
+            <div id="preview"></div>
+            <div id="expression">0</div>
+        </div>
 
-<section class="hero">
-  <h1>Welcome to BDH Store</h1>
-  <p>Your trusted shopping destination</p>
-</section>
+        <div id="keypad" class="grid">
+            <button class="action" onclick="clearAll()">AC</button>
+            <button class="action" onclick="backspace()">⌫</button>
+            <button class="operator" onclick="inputOperator('%')">%</button>
+            <button class="operator" onclick="inputOperator('/')">÷</button>
 
-<section class="products" id="products">
+            <button class="sci hidden" onclick="inputFunction('sin')">sin</button>
+            <button class="sci hidden" onclick="inputFunction('cos')">cos</button>
+            <button class="sci hidden" onclick="inputFunction('tan')">tan</button>
+            <button class="sci hidden" onclick="inputFunction('log')">log</button>
+            <button class="sci hidden" onclick="inputOperator('^')">xʸ</button>
 
-  <div class="card">
-    <img src="https://via.placeholder.com/300">
-    <h3>Product 1</h3>
-    <p>₹499</p>
-    <button>Buy Now</button>
-  </div>
+            <button onclick="inputDigit('7')">7</button>
+            <button onclick="inputDigit('8')">8</button>
+            <button onclick="inputDigit('9')">9</button>
+            <button class="operator" onclick="inputOperator('*')">×</button>
 
-  <div class="card">
-    <img src="https://via.placeholder.com/300">
-    <h3>Product 2</h3>
-    <p>₹999</p>
-    <button>Buy Now</button>
-  </div>
+            <button onclick="inputDigit('4')">4</button>
+            <button onclick="inputDigit('5')">5</button>
+            <button onclick="inputDigit('6')">6</button>
+            <button class="operator" onclick="inputOperator('-')">−</button>
 
-</section>
+            <button onclick="inputDigit('1')">1</button>
+            <button onclick="inputDigit('2')">2</button>
+            <button onclick="inputDigit('3')">3</button>
+            <button class="operator" onclick="inputOperator('+')">+</button>
 
-<footer>
-  <p>© 2026 BDH Store</p>
-</footer>
+            <button onclick="inputDigit('0')">0</button>
+            <button onclick="inputDigit('.')">.</button>
+            <button class="operator" onclick="inputBracket('(')">(</button>
+            <button class="operator" onclick="inputBracket(')')">)</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
 
-<button id="adminToggle" onclick="openAdmin()">
-  Admin
-</button>
+    <div id="historyPanel" class="history-panel">
+        <div class="history-header">
+            <h2>History</h2>
+            <button class="action" style="padding: 5px 15px; font-size: 1rem;" onclick="clearHistory()">Clear</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+    </div>
 
-<div id="adminPanel">
-
-  <h2>Admin Login</h2>
-
-  <div id="loginArea">
-    <input type="password" id="adminPassword" placeholder="Enter Password">
-    <button class="admin-btn" onclick="login()">
-      Login
-    </button>
-  </div>
-
-  <div id="adminArea" style="display:none;">
-
-    <input type="text" id="productName" placeholder="Product Name">
-
-    <input type="text" id="productPrice" placeholder="Product Price">
-
-    <input type="text" id="productImage" placeholder="Image URL">
-
-    <button class="admin-btn" onclick="addProduct()">
-      Add Product
-    </button>
-
-    <div id="productList"></div>
-
-  </div>
-
-  <button class="admin-btn" onclick="closeAdmin()">
-    Close
-  </button>
-
-</div>
+    <div class="admob">
+        <span style="color: #444; font-size: 0.9rem;">Google AdMob Banner Space</span>
+    </div>
 
 <script>
+    const exprDiv = document.getElementById("expression");
+    const previewDiv = document.getElementById("preview");
+    const keypad = document.getElementById("keypad");
+    const historyPanel = document.getElementById("historyPanel");
+    const historyList = document.getElementById("historyList");
 
-const ADMIN_PASSWORD = "admin123";
+    let isSciMode = false;
 
-function openAdmin(){
-  document.getElementById("adminPanel").style.display = "block";
-}
+    function switchMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        if(mode === 'sci') {
+            isSciMode = true;
+            document.querySelectorAll('.mode-btn')[1].classList.add('active');
+            keypad.classList.add('sci-mode');
+            document.querySelectorAll('.sci').forEach(b => b.classList.remove('hidden'));
+        } else if(mode === 'norm') {
+            isSciMode = false;
+            document.querySelectorAll('.mode-btn')[0].classList.add('active');
+            keypad.classList.remove('sci-mode');
+            document.querySelectorAll('.sci').forEach(b => b.classList.add('hidden'));
+        }
+    }
 
-function closeAdmin(){
-  document.getElementById("adminPanel").style.display = "none";
-}
+    function toggleHistory() {
+        historyPanel.classList.toggle('open');
+        if(historyPanel.classList.contains('open')) {
+            renderHistory();
+        }
+    }
 
-function login(){
+    function inputDigit(val) {
+        if (exprDiv.innerText === "0" && val !== ".") {
+            exprDiv.innerText = val;
+        } else {
+            exprDiv.innerText += val;
+        }
+        updateLivePreview();
+    }
 
-  const pass = document.getElementById("adminPassword").value;
+    function inputOperator(op) {
+        let current = exprDiv.innerText;
+        let lastChar = current.slice(-1);
+        if(["+", "-", "*", "/", "%", "^"].includes(lastChar)) {
+            exprDiv.innerText = current.slice(0, -1) + op;
+        } else {
+            exprDiv.innerText += op;
+        }
+    }
 
-  if(pass === ADMIN_PASSWORD){
+    function inputBracket(br) {
+        if(exprDiv.innerText === "0") {
+            exprDiv.innerText = br;
+        } else {
+            exprDiv.innerText += br;
+        }
+    }
 
-    document.getElementById("loginArea").style.display = "none";
+    function inputFunction(funcName) {
+        if (exprDiv.innerText === "0") {
+            exprDiv.innerText = funcName + "(";
+        } else {
+            let lastChar = exprDiv.innerText.slice(-1);
+            if(["+", "-", "*", "/", "("].includes(lastChar)) {
+                exprDiv.innerText += funcName + "(";
+            } else {
+                exprDiv.innerText += "*" + funcName + "(";
+            }
+        }
+        updateLivePreview();
+    }
 
-    document.getElementById("adminArea").style.display = "block";
+    function clearAll() {
+        exprDiv.innerText = "0";
+        previewDiv.innerText = "";
+    }
 
-    loadProducts();
+    function backspace() {
+        let current = exprDiv.innerText;
+        if(current.length <= 1 || current === "0") {
+            exprDiv.innerText = "0";
+        } else {
+            if(current.endsWith("sin(") || current.endsWith("cos(") || current.endsWith("tan(")) {
+                exprDiv.innerText = current.slice(0, -4) || "0";
+            } else if(current.endsWith("log(")) {
+                exprDiv.innerText = current.slice(0, -4) || "0";
+            } else {
+                exprDiv.innerText = current.slice(0, -1);
+            }
+        }
+        updateLivePreview();
+    }
 
-  }else{
-    alert("Wrong Password");
-  }
+    function updateLivePreview() {
+        try {
+            let raw = exprDiv.innerText;
+            if(raw === "0" || raw === "") { previewDiv.innerText = ""; return; }
+            let formatted = parseExpression(raw);
+            let res = eval(formatted);
+            if(res !== undefined && !isNaN(res)) {
+                previewDiv.innerText = Number.isInteger(res) ? res : parseFloat(res.toFixed(6));
+            }
+        } catch(e) {
+            previewDiv.innerText = "";
+        }
+    }
 
-}
+    function parseExpression(str) {
+        let clean = str.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+        let openB = (clean.match(/\(/g) || []).length;
+        let closeB = (clean.match(/\)/g) || []).length;
+        while(openB > closeB) { clean += ")"; closeB++; }
 
-function getProducts(){
-  return JSON.parse(localStorage.getItem("products")) || [];
-}
+        clean = clean.replace(/sin\(/g, "Math.sin(" + Math.PI + "/180*");
+        clean = clean.replace(/cos\(/g, "Math.cos(" + Math.PI + "/180*");
+        clean = clean.replace(/tan\(/g, "Math.tan(" + Math.PI + "/180*");
+        clean = clean.replace(/log\(/g, "Math.log10(");
+        
+        if(clean.includes("^")) {
+            let parts = clean.split("^");
+            clean = `Math.pow(${parts[0]},${parts[1]})`;
+        }
+        return clean;
+    }
 
-function saveProducts(products){
-  localStorage.setItem("products", JSON.stringify(products));
-}
+    function calculate() {
+        try {
+            let originalExpr = exprDiv.innerText;
+            if(originalExpr === "0") return;
+            
+            let formatted = parseExpression(originalExpr);
+            let result = eval(formatted);
+            
+            if(result === undefined || isNaN(result)) throw new Error();
+            
+            if (!Number.isInteger(result)) {
+                result = parseFloat(result.toFixed(8));
+            }
+            
+            saveToHistory(originalExpr, result);
+            exprDiv.innerText = result;
+            previewDiv.innerText = "";
+        } catch (error) {
+            exprDiv.innerText = "Error";
+            previewDiv.innerText = "";
+            setTimeout(() => { exprDiv.innerText = "0"; }, 1500);
+        }
+    }
 
-function addProduct(){
+    function saveToHistory(expr, res) {
+        let history = JSON.parse(localStorage.getItem("fluxaaCalc_hist") || "[]");
+        history.unshift({ expr, res });
+        if(history.length > 20) history.pop();
+        localStorage.setItem("fluxaaCalc_hist", JSON.stringify(history));
+    }
 
-  const name = document.getElementById("productName").value;
+    function renderHistory() {
+        let history = JSON.parse(localStorage.getItem("fluxaaCalc_hist") || "[]");
+        if(history.length === 0) {
+            historyList.innerHTML = "<p style='text-align:center;color:var(--text-dim);margin-top:20px;'>No history yet</p>";
+            return;
+        }
+        historyList.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="hist-expr">${item.expr}</div>
+                <div class="hist-res">${item.res}</div>
+            </div>
+        `).join("");
+    }
 
-  const price = document.getElementById("productPrice").value;
-
-  const image = document.getElementById("productImage").value;
-
-  if(!name || !price || !image){
-    alert("Fill all fields");
-    return;
-  }
-
-  const products = getProducts();
-
-  products.push({
-    name,
-    price,
-    image
-  });
-
-  saveProducts(products);
-
-  renderProducts();
-
-  loadProducts();
-
-}
-
-function renderProducts(){
-
-  const container = document.getElementById("products");
-
-  document.querySelectorAll(".dynamic-product").forEach(el => el.remove());
-
-  const products = getProducts();
-
-  products.forEach((product) => {
-
-    container.innerHTML += `
-      <div class="card dynamic-product">
-        <img src="${product.image}">
-        <h3>${product.name}</h3>
-        <p>₹${product.price}</p>
-        <button>Buy Now</button>
-      </div>
-    `;
-
-  });
-
-}
-
-function loadProducts(){
-
-  const products = getProducts();
-
-  const list = document.getElementById("productList");
-
-  list.innerHTML = "";
-
-  products.forEach((product,index) => {
-
-    list.innerHTML += `
-      <div class="admin-product">
-
-        <img src="${product.image}" width="80">
-
-        <h3>${product.name}</h3>
-
-        <p>₹${product.price}</p>
-
-        <button class="delete-btn"
-        onclick="deleteProduct(${index})">
-          Delete
-        </button>
-
-      </div>
-    `;
-
-  });
-
-}
-
-function deleteProduct(index){
-
-  const products = getProducts();
-
-  products.splice(index,1);
-
-  saveProducts(products);
-
-  renderProducts();
-
-  loadProducts();
-
-}
-
-window.onload = function(){
-  renderProducts();
-}
-
+    function clearHistory() {
+        localStorage.removeItem("fluxaaCalc_hist");
+        renderHistory();
+    }
 </script>
-
 </body>
 </html>
