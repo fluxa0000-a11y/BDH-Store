@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,7 +35,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 430px;
             background: var(--card);
             border-radius: 30px;
             padding: 20px;
@@ -99,7 +99,7 @@
         .grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
         .grid.sci-mode {
@@ -110,9 +110,9 @@
             border: none;
             background: var(--btn-dark);
             color: var(--text-main);
-            font-size: 1.5rem;
-            padding: 18px 0;
-            border-radius: 16px;
+            font-size: 1.4rem;
+            padding: 15px 0;
+            border-radius: 14px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.1s;
@@ -129,7 +129,7 @@
         button.operator { color: var(--blue); background: #12253a; }
         button.action { color: #ff453a; background: #2c1616; }
         button.equal { background: var(--orange); color: #000; font-weight: bold; }
-        button.sci { background: #1a1a2e; color: var(--blue); font-size: 1.1rem; }
+        button.sci { background: #1a1a2e; color: var(--blue); font-size: 1rem; }
 
         .hidden { display: none !important; }
 
@@ -152,7 +152,6 @@
         .hist-expr { color: var(--text-dim); font-size: 1rem; }
         .hist-res { color: var(--orange); font-size: 1.3rem; font-weight: bold; }
 
-        /* ADMOB BOX */
         .admob {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
@@ -189,8 +188,19 @@
             <button class="sci hidden" onclick="inputFunction('sin')">sin</button>
             <button class="sci hidden" onclick="inputFunction('cos')">cos</button>
             <button class="sci hidden" onclick="inputFunction('tan')">tan</button>
+            <button class="sci hidden" onclick="inputFunction('sinh')">sinh</button>
+            <button class="sci hidden" onclick="inputFunction('cosh')">cosh</button>
+            <button class="sci hidden" onclick="inputFunction('tanh')">tanh</button>
+            <button class="sci hidden" onclick="inputFunction('sqrt')">√</button>
             <button class="sci hidden" onclick="inputFunction('log')">log</button>
+            <button class="sci hidden" onclick="inputFunction('ln')">ln</button>
             <button class="sci hidden" onclick="inputOperator('^')">xʸ</button>
+            <button class="sci hidden" onclick="runSpecial('square')">x²</button>
+            <button class="sci hidden" onclick="runSpecial('cube')">x³</button>
+            <button class="sci hidden" onclick="runSpecial('factorial')">x!</button>
+            <button class="sci hidden" onclick="runSpecial('inverse')">1/x</button>
+            <button class="sci hidden" onclick="runSpecial('rand')">Rand</button>
+            <button class="sci hidden" onclick="runSpecial('eng')">ENG</button>
 
             <button onclick="inputDigit('7')">7</button>
             <button onclick="inputDigit('8')">8</button>
@@ -285,6 +295,7 @@
         }
     }
 
+    // Prefixed Function Text Handler
     function inputFunction(funcName) {
         if (exprDiv.innerText === "0") {
             exprDiv.innerText = funcName + "(";
@@ -299,6 +310,33 @@
         updateLivePreview();
     }
 
+    // Instant/Special Math Logic Buttons
+    function runSpecial(type) {
+        try {
+            let currentVal = eval(parseExpression(exprDiv.innerText));
+            if(currentVal === undefined || isNaN(currentVal)) return;
+            let output = 0;
+
+            switch(type) {
+                case 'square': output = Math.pow(currentVal, 2); break;
+                case 'cube': output = Math.pow(currentVal, 3); break;
+                case 'inverse': output = 1 / currentVal; break;
+                case 'rand': output = Math.random(); break;
+                case 'eng': output = currentVal.toExponential(4); break;
+                case 'factorial':
+                    if (currentVal < 0) { output = "Error"; break; }
+                    let fact = 1;
+                    for (let i = 1; i <= currentVal; i++) fact *= i;
+                    output = fact;
+                    break;
+            }
+            exprDiv.innerText = output;
+            previewDiv.innerText = "";
+        } catch(e) {
+            exprDiv.innerText = "Error";
+        }
+    }
+
     function clearAll() {
         exprDiv.innerText = "0";
         previewDiv.innerText = "";
@@ -309,10 +347,14 @@
         if(current.length <= 1 || current === "0") {
             exprDiv.innerText = "0";
         } else {
-            if(current.endsWith("sin(") || current.endsWith("cos(") || current.endsWith("tan(")) {
+            if(current.endsWith("sinh(") || current.endsWith("cosh(") || current.endsWith("tanh(")) {
+                exprDiv.innerText = current.slice(0, -5) || "0";
+            } else if(current.endsWith("sin(") || current.endsWith("cos(") || current.endsWith("tan(") || current.endsWith("sqrt(")) {
                 exprDiv.innerText = current.slice(0, -4) || "0";
-            } else if(current.endsWith("log(")) {
+            } else if(current.endsWith("log(") || current.endsWith("txt(")) {
                 exprDiv.innerText = current.slice(0, -4) || "0";
+            } else if(current.endsWith("ln(")) {
+                exprDiv.innerText = current.slice(0, -3) || "0";
             } else {
                 exprDiv.innerText = current.slice(0, -1);
             }
@@ -340,10 +382,18 @@
         let closeB = (clean.match(/\)/g) || []).length;
         while(openB > closeB) { clean += ")"; closeB++; }
 
+        // Degree configuration maps
         clean = clean.replace(/sin\(/g, "Math.sin(" + Math.PI + "/180*");
         clean = clean.replace(/cos\(/g, "Math.cos(" + Math.PI + "/180*");
         clean = clean.replace(/tan\(/g, "Math.tan(" + Math.PI + "/180*");
+        
+        // Advanced formula updates
+        clean = clean.replace(/sinh\(/g, "Math.sinh(");
+        clean = clean.replace(/cosh\(/g, "Math.cosh(");
+        clean = clean.replace(/tanh\(/g, "Math.tanh(");
+        clean = clean.replace(/sqrt\(/g, "Math.sqrt(");
         clean = clean.replace(/log\(/g, "Math.log10(");
+        clean = clean.replace(/ln\(/g, "Math.log(");
         
         if(clean.includes("^")) {
             let parts = clean.split("^");
