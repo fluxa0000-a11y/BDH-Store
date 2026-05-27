@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pocket Scientific Calculator</title>
+    <title>Fluxaa Ultimate Mega Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg: #000000;
@@ -15,259 +17,233 @@
             --text-main: #ffffff;
             --text-dim: #8e8e93;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        .light-mode {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --btn-dark: #e5e5ea;
+            --btn-light: #d1d1d6;
+            --text-main: #000000;
+            --text-dim: #636366;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 80px; transition: all 0.3s; }
+        
+        /* Top Navigation Bar */
+        .utility-bar { display: flex; overflow-x: auto; background: #121824; padding: 10px; gap: 10px; border-bottom: 1px solid #1f293d; white-space: nowrap; }
+        .util-btn { background: var(--btn-dark); color: var(--text-main); border: none; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+        .util-btn.active { background: var(--blue); color: #000; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding-bottom: 70px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 430px;
-            background: var(--card);
-            border-radius: 30px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            border: 1px solid #1f293d;
-        }
-
-        .display {
-            padding: 20px 10px;
-            text-align: right;
-            margin-bottom: 20px;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            word-wrap: break-word;
-            word-break: break-all;
-        }
-
-        #preview {
-            color: var(--text-dim);
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            min-height: 1.5rem;
-        }
-
-        #expression {
-            font-size: 2.8rem;
-            font-weight: 300;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .mode-selector {
-            display: flex;
-            background: #121824;
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 20px;
-            border: 1px solid #1f293d;
-        }
-
-        .mode-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            padding: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.2s;
-        }
-
-        .mode-btn.active {
-            background: var(--blue);
-            color: #000;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .grid.sci-mode {
-            grid-template-columns: repeat(5, 1fr);
-        }
-
-        button {
-            border: none;
-            background: var(--btn-dark);
-            color: var(--text-main);
-            font-size: 1.4rem;
-            padding: 15px 0;
-            border-radius: 14px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.1s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        button:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
+        .container { max-width: 450px; margin: 15px auto; padding: 15px; background: var(--card); border-radius: 24px; border: 1px solid #1f293d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Main Display */
+        .display { padding: 20px 10px; text-align: right; min-height: 140px; display: flex; flex-direction: column; justify-content: flex-end; }
+        #preview { color: var(--text-dim); font-size: 1.2rem; min-height: 1.5rem; margin-bottom: 5px; }
+        #expression { font-size: 2.6rem; font-weight: 300; overflow-x: auto; white-space: nowrap; }
+        
+        /* Panel Systems */
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        /* Grids and Layouts */
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .grid.sci { grid-template-columns: repeat(5, 1fr); }
+        
+        button { border: none; background: var(--btn-dark); color: var(--text-main); font-size: 1.3rem; padding: 16px 0; border-radius: 12px; cursor: pointer; font-weight: 500; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
         button.operator { color: var(--blue); background: #12253a; }
         button.action { color: #ff453a; background: #2c1616; }
         button.equal { background: var(--orange); color: #000; font-weight: bold; }
-        button.sci { background: #1a1a2e; color: var(--blue); font-size: 1rem; }
+        button.sci-op { background: #1a1a2e; color: var(--blue); font-size: 1.05rem; }
 
-        .hidden { display: none !important; }
-
-        .history-panel {
-            background: rgba(10,14,20,0.95);
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 70px;
-            z-index: 100;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .history-panel.open { transform: translateY(0); }
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .history-list { flex: 1; overflow-y: auto; }
-        .history-item { padding: 12px 0; border-bottom: 1px solid #1f293d; text-align: right; }
-        .hist-expr { color: var(--text-dim); font-size: 1rem; }
-        .hist-res { color: var(--orange); font-size: 1.3rem; font-weight: bold; }
-
-        .admob {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            height: 70px;
-            background: #000;
-            border-top: 1px solid #1c1c1e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+        /* Extra Utilities Styling */
+        input, select { width: 100%; background: var(--btn-dark); color: var(--text-main); border: 1px solid #1f293d; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 1rem; }
+        .result-box { background: #121824; padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid #1f293d; min-height: 40px; word-break: break-all; }
+        
+        /* Matrix input blocks */
+        .matrix-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        
+        /* AdMob Fixed Bottom Layout */
+        .admob { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid #1c1c1e; display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="mode-selector">
-            <button class="mode-btn active" onclick="switchMode('norm')">Standard</button>
-            <button class="mode-btn" onclick="switchMode('sci')">Scientific</button>
-            <button class="mode-btn" onclick="toggleHistory()">History</button>
-        </div>
-
-        <div class="display">
-            <div id="preview"></div>
-            <div id="expression">0</div>
-        </div>
-
-        <div id="keypad" class="grid">
-            <button class="action" onclick="clearAll()">AC</button>
-            <button class="action" onclick="backspace()">⌫</button>
-            <button class="operator" onclick="inputOperator('%')">%</button>
-            <button class="operator" onclick="inputOperator('/')">÷</button>
-
-            <button class="sci hidden" onclick="inputFunction('sin')">sin</button>
-            <button class="sci hidden" onclick="inputFunction('cos')">cos</button>
-            <button class="sci hidden" onclick="inputFunction('tan')">tan</button>
-            <button class="sci hidden" onclick="inputFunction('sinh')">sinh</button>
-            <button class="sci hidden" onclick="inputFunction('cosh')">cosh</button>
-            <button class="sci hidden" onclick="inputFunction('tanh')">tanh</button>
-            <button class="sci hidden" onclick="inputFunction('sqrt')">√</button>
-            <button class="sci hidden" onclick="inputFunction('log')">log</button>
-            <button class="sci hidden" onclick="inputFunction('ln')">ln</button>
-            <button class="sci hidden" onclick="inputOperator('^')">xʸ</button>
-            <button class="sci hidden" onclick="runSpecial('square')">x²</button>
-            <button class="sci hidden" onclick="runSpecial('cube')">x³</button>
-            <button class="sci hidden" onclick="runSpecial('factorial')">x!</button>
-            <button class="sci hidden" onclick="runSpecial('inverse')">1/x</button>
-            <button class="sci hidden" onclick="runSpecial('rand')">Rand</button>
-            <button class="sci hidden" onclick="runSpecial('eng')">ENG</button>
-
-            <button onclick="inputDigit('7')">7</button>
-            <button onclick="inputDigit('8')">8</button>
-            <button onclick="inputDigit('9')">9</button>
-            <button class="operator" onclick="inputOperator('*')">×</button>
-
-            <button onclick="inputDigit('4')">4</button>
-            <button onclick="inputDigit('5')">5</button>
-            <button onclick="inputDigit('6')">6</button>
-            <button class="operator" onclick="inputOperator('-')">−</button>
-
-            <button onclick="inputDigit('1')">1</button>
-            <button onclick="inputDigit('2')">2</button>
-            <button onclick="inputDigit('3')">3</button>
-            <button class="operator" onclick="inputOperator('+')">+</button>
-
-            <button onclick="inputDigit('0')">0</button>
-            <button onclick="inputDigit('.')">.</button>
-            <button class="operator" onclick="inputBracket('(')">(</button>
-            <button class="operator" onclick="inputBracket(')')">)</button>
-            <button class="equal" onclick="calculate()">=</button>
-        </div>
+    <div class="utility-bar">
+        <button class="util-btn active" onclick="switchPanel('calc')">🧮 Calculator</button>
+        <button class="util-btn" onclick="switchPanel('matrix')">🔢 Matrix</button>
+        <button class="util-btn" onclick="switchPanel('graph')">📈 Graphing</button>
+        <button class="util-btn" onclick="switchPanel('converter')">🔄 Unit/Currency</button>
+        <button class="util-btn" onclick="switchPanel('extra')">🛠️ Tools (BMI/Age)</button>
+        <button class="util-btn" onclick="toggleTheme()">🌓 Theme</button>
     </div>
 
-    <div id="historyPanel" class="history-panel">
-        <div class="history-header">
-            <h2>History</h2>
-            <button class="action" style="padding: 5px 15px; font-size: 1rem;" onclick="clearHistory()">Clear</button>
+    <div class="container">
+        
+        <div id="panel-calc" class="panel active">
+            <div class="display">
+                <div style="display:flex; justify-content:space-between; color:var(--text-dim); font-size:0.85rem; margin-bottom:5px;">
+                    <span id="mode-status" style="cursor:pointer;" onclick="toggleDegRad()">DEG</span>
+                    <span style="cursor:pointer;" onclick="copyResult()">📋 Copy</span>
+                </div>
+                <div id="preview"></div>
+                <div id="expression">0</div>
+            </div>
+
+            <div class="grid sci">
+                <button class="action" onclick="clearAll()">AC</button>
+                <button class="action" onclick="backspace()">⌫</button>
+                <button class="sci-op" onclick="inputFunction('sin')">sin</button>
+                <button class="sci-op" onclick="inputFunction('cos')">cos</button>
+                <button class="sci-op" onclick="inputFunction('tan')">tan</button>
+
+                <button class="sci-op" onclick="inputFunction('asin')">sin⁻¹</button>
+                <button class="sci-op" onclick="inputFunction('acos')">cos⁻¹</button>
+                <button class="sci-op" onclick="inputFunction('atan')">tan⁻¹</button>
+                <button class="sci-op" onclick="inputFunction('log')">log</button>
+                <button class="sci-op" onclick="inputFunction('ln')">ln</button>
+
+                <button class="sci-op" onclick="inputFunction('sinh')">sinh</button>
+                <button class="sci-op" onclick="inputFunction('cosh')">cosh</button>
+                <button class="sci-op" onclick="inputFunction('tanh')">tanh</button>
+                <button class="sci-op" onclick="inputOperator('^')">xʸ</button>
+                <button class="sci-op" onclick="inputSpecial('^2')">x²</button>
+
+                <button class="operator" onclick="inputOperator('/')">÷</button>
+                <button onclick="inputDigit('7')">7</button>
+                <button onclick="inputDigit('8')">8</button>
+                <button onclick="inputDigit('9')">9</button>
+                <button class="operator" onclick="inputOperator('*')">×</button>
+
+                <button class="operator" onclick="inputOperator('-')">−</button>
+                <button onclick="inputDigit('4')">4</button>
+                <button onclick="inputDigit('5')">5</button>
+                <button onclick="inputDigit('6')">6</button>
+                <button class="operator" onclick="inputOperator('+')">+</button>
+
+                <button class="sci-op" onclick="inputSpecial('!')">n!</button>
+                <button onclick="inputDigit('1')">1</button>
+                <button onclick="inputDigit('2')">2</button>
+                <button onclick="inputDigit('3')">3</button>
+                <button class="sci-op" onclick="inputSpecial('pi')">π</button>
+
+                <button class="sci-op" onclick="inputSpecial('e')">e</button>
+                <button onclick="inputDigit('0')">0</button>
+                <button onclick="inputDigit('.')">.</button>
+                <button class="sci-op" onclick="inputBracket('(')">(</button>
+                <button class="sci-op" onclick="inputBracket(')')">)</button>
+
+                <button class="sci-op" onclick="inputFunction('sqrt')">√</button>
+                <button class="sci-op" onclick="inputSpecial('abs')">|x|</button>
+                <button class="sci-op" onclick="inputSpecial('1/')">1/x</button>
+                <button class="sci-op" onclick="inputSpecial('rand')">Rand</button>
+                <button class="equal" onclick="calculate()">=</button>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-top:10px;">
+                <button style="font-size:0.9rem; padding:8px 0;" onclick="handleMemory('MC')">MC</button>
+                <button style="font-size:0.9rem; padding:8px 0;" onclick="handleMemory('MR')">MR</button>
+                <button style="font-size:0.9rem; padding:8px 0;" onclick="handleMemory('M+')">M+</button>
+                <button style="font-size:0.9rem; padding:8px 0;" onclick="handleMemory('M-')">M-</button>
+            </div>
         </div>
-        <div id="historyList" class="history-list"></div>
+
+        <div id="panel-matrix" class="panel">
+            <h3 style="margin-bottom:10px;">2x2 Matrix Calculations</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;">Fill values for Matrix A:</p>
+            <div class="matrix-row">
+                <input type="number" id="m11" value="1"> <input type="number" id="m12" value="2">
+            </div>
+            <div class="matrix-row">
+                <input type="number" id="m21" value="3"> <input type="number" id="m22" value="4">
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button style="flex:1; font-size:1rem;" onclick="solveMatrix('det')">Determinant</button>
+                <button style="flex:1; font-size:1rem;" onclick="solveMatrix('inv')">Inverse</button>
+            </div>
+            <h4>Result:</h4>
+            <div id="matrix-result" class="result-box">Result will show here...</div>
+        </div>
+
+        <div id="panel-graph" class="panel">
+            <h3 style="margin-bottom:10px;">Function Graph Plotter</h3>
+            <input type="text" id="graph-expr" value="x^2 - 4" placeholder="e.g. x^2, sin(x)">
+            <button style="width:100%; font-size:1rem; margin-bottom:15px;" onclick="plotGraph()">Plot/Render Equation</button>
+            <div style="background:#fff; border-radius:8px; padding:5px;">
+                <canvas id="graphCanvas" style="width:100%; max-height:220px;"></canvas>
+            </div>
+        </div>
+
+        <div id="panel-converter" class="panel">
+            <h3 style="margin-bottom:10px;">Unit & Currency Converter</h3>
+            <select id="conv-type" onchange="updateConvOptions()">
+                <option value="length">Length (m to km)</option>
+                <option value="weight">Weight (kg to g)</option>
+                <option value="currency">Currency (USD to INR)</option>
+            </select>
+            <input type="number" id="conv-input" value="1" oninput="runConversion()">
+            <h4>Converted Value:</h4>
+            <div id="conv-result" class="result-box">Select type to convert...</div>
+        </div>
+
+        <div id="panel-extra" class="panel">
+            <h3 style="margin-bottom:10px;">BMI & Math Utility Tools</h3>
+            <select id="tool-select" onchange="toggleToolDivs()">
+                <option value="bmi">BMI Calculator</option>
+                <option value="age">Age Finder</option>
+                <option value="prime">Prime & HCF Checker</option>
+            </select>
+            
+            <div id="tool-bmi">
+                <input type="number" id="bmi-w" placeholder="Weight (kg)">
+                <input type="number" id="bmi-h" placeholder="Height (cm)">
+                <button style="width:100%; font-size:1rem;" onclick="runBmi()">Calculate BMI</button>
+            </div>
+            <div id="tool-age" style="display:none;">
+                <input type="date" id="age-dob">
+                <button style="width:100%; font-size:1rem;" onclick="runAge()">Find Age</button>
+            </div>
+            <div id="tool-prime" style="display:none;">
+                <input type="number" id="prime-num" placeholder="Enter Integer Value">
+                <button style="width:100%; font-size:1rem;" onclick="runPrimeHcf()">Check Properties</button>
+            </div>
+            <div id="tool-result" class="result-box" style="margin-top:15px;">Output details...</div>
+        </div>
+
     </div>
 
     <div class="admob">
-        <span style="color: #444; font-size: 0.9rem;">Google AdMob Banner Space</span>
+        <span style="color: var(--text-dim); font-size: 0.85rem;">Google AdMob Banner Space</span>
     </div>
 
 <script>
+    // Global Elements Setup
     const exprDiv = document.getElementById("expression");
     const previewDiv = document.getElementById("preview");
-    const keypad = document.getElementById("keypad");
-    const historyPanel = document.getElementById("historyPanel");
-    const historyList = document.getElementById("historyList");
+    let isDeg = true;
+    let memoryVal = 0;
+    let chartInstance = null;
 
-    let isSciMode = false;
-
-    function switchMode(mode) {
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-        if(mode === 'sci') {
-            isSciMode = true;
-            document.querySelectorAll('.mode-btn')[1].classList.add('active');
-            keypad.classList.add('sci-mode');
-            document.querySelectorAll('.sci').forEach(b => b.classList.remove('hidden'));
-        } else if(mode === 'norm') {
-            isSciMode = false;
-            document.querySelectorAll('.mode-btn')[0].classList.add('active');
-            keypad.classList.remove('sci-mode');
-            document.querySelectorAll('.sci').forEach(b => b.classList.add('hidden'));
-        }
+    // Navigation Panels Handler
+    function switchPanel(panelId) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.util-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`panel-${panelId}`).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    function toggleHistory() {
-        historyPanel.classList.toggle('open');
-        if(historyPanel.classList.contains('open')) {
-            renderHistory();
-        }
+    // System Style Theme Toggle
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
     }
 
+    // Toggle Deg to Rad Context
+    function toggleDegRad() {
+        isDeg = !isDeg;
+        document.getElementById("mode-status").innerText = isDeg ? "DEG" : "RAD";
+        updateLivePreview();
+    }
+
+    // Advanced Prefix Math Notation Processing Logic
     function inputDigit(val) {
         if (exprDiv.innerText === "0" && val !== ".") {
             exprDiv.innerText = val;
@@ -278,179 +254,164 @@
     }
 
     function inputOperator(op) {
-        let current = exprDiv.innerText;
-        let lastChar = current.slice(-1);
-        if(["+", "-", "*", "/", "%", "^"].includes(lastChar)) {
-            exprDiv.innerText = current.slice(0, -1) + op;
+        let lastChar = exprDiv.innerText.slice(-1);
+        if(["+", "-", "*", "/", "^"].includes(lastChar)) {
+            exprDiv.innerText = exprDiv.innerText.slice(0, -1) + op;
         } else {
             exprDiv.innerText += op;
         }
     }
 
     function inputBracket(br) {
-        if(exprDiv.innerText === "0") {
-            exprDiv.innerText = br;
-        } else {
-            exprDiv.innerText += br;
-        }
+        if(exprDiv.innerText === "0") exprDiv.innerText = br;
+        else exprDiv.innerText += br;
+        updateLivePreview();
     }
 
-    // Prefixed Function Text Handler
-    function inputFunction(funcName) {
-        if (exprDiv.innerText === "0") {
-            exprDiv.innerText = funcName + "(";
-        } else {
-            let lastChar = exprDiv.innerText.slice(-1);
-            if(["+", "-", "*", "/", "("].includes(lastChar)) {
-                exprDiv.innerText += funcName + "(";
-            } else {
-                exprDiv.innerText += "*" + funcName + "(";
-            }
+    function inputFunction(func) {
+        if(exprDiv.innerText === "0") exprDiv.innerText = func + "(";
+        else {
+            let last = exprDiv.innerText.slice(-1);
+            if(["+", "-", "*", "/", "("].includes(last)) exprDiv.innerText += func + "(";
+            else exprDiv.innerText += "*" + func + "(";
         }
         updateLivePreview();
     }
 
-    // Instant/Special Math Logic Buttons
-    function runSpecial(type) {
-        try {
-            let currentVal = eval(parseExpression(exprDiv.innerText));
-            if(currentVal === undefined || isNaN(currentVal)) return;
-            let output = 0;
-
-            switch(type) {
-                case 'square': output = Math.pow(currentVal, 2); break;
-                case 'cube': output = Math.pow(currentVal, 3); break;
-                case 'inverse': output = 1 / currentVal; break;
-                case 'rand': output = Math.random(); break;
-                case 'eng': output = currentVal.toExponential(4); break;
-                case 'factorial':
-                    if (currentVal < 0) { output = "Error"; break; }
-                    let fact = 1;
-                    for (let i = 1; i <= currentVal; i++) fact *= i;
-                    output = fact;
-                    break;
-            }
-            exprDiv.innerText = output;
-            previewDiv.innerText = "";
-        } catch(e) {
-            exprDiv.innerText = "Error";
+    function inputSpecial(sym) {
+        if(sym === '1/') {
+            exprDiv.innerText = "1/(" + exprDiv.innerText + ")";
+        } else if(sym === 'rand') {
+            exprDiv.innerText += Math.random().toFixed(4);
+        } else {
+            if(exprDiv.innerText === "0") exprDiv.innerText = sym;
+            else exprDiv.innerText += sym;
         }
+        updateLivePreview();
     }
 
-    function clearAll() {
-        exprDiv.innerText = "0";
-        previewDiv.innerText = "";
-    }
-
+    function clearAll() { exprDiv.innerText = "0"; previewDiv.innerText = ""; }
+    
     function backspace() {
-        let current = exprDiv.innerText;
-        if(current.length <= 1 || current === "0") {
-            exprDiv.innerText = "0";
-        } else {
-            if(current.endsWith("sinh(") || current.endsWith("cosh(") || current.endsWith("tanh(")) {
-                exprDiv.innerText = current.slice(0, -5) || "0";
-            } else if(current.endsWith("sin(") || current.endsWith("cos(") || current.endsWith("tan(") || current.endsWith("sqrt(")) {
-                exprDiv.innerText = current.slice(0, -4) || "0";
-            } else if(current.endsWith("log(") || current.endsWith("txt(")) {
-                exprDiv.innerText = current.slice(0, -4) || "0";
-            } else if(current.endsWith("ln(")) {
-                exprDiv.innerText = current.slice(0, -3) || "0";
-            } else {
-                exprDiv.innerText = current.slice(0, -1);
-            }
+        let str = exprDiv.innerText;
+        if(str.length <= 1 || str === "0") exprDiv.innerText = "0";
+        else {
+            // Bulk text wipe mechanics for functions
+            if(str.endsWith("sin(") || str.endsWith("cos(") || str.endsWith("tan(")) str = str.slice(0, -4);
+            else if(str.endsWith("asin(") || str.endsWith("acos(") || str.endsWith("atan(")) str = str.slice(0, -5);
+            else if(str.endsWith("sinh(") || str.endsWith("cosh(") || str.endsWith("tanh(")) str = str.slice(0, -5);
+            else if(str.endsWith("log(") || str.endsWith("sqrt(")) str = str.slice(0, -4);
+            else if(str.endsWith("ln(")) str = str.slice(0, -3);
+            else str = str.slice(0, -1);
+            exprDiv.innerText = str || "0";
         }
         updateLivePreview();
+    }
+
+    // Engine Safe String Transformer
+    function cleanFormat(expr) {
+        let s = expr.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
+        // Balance brackets automatically
+        let openB = (s.match(/\(/g) || []).length;
+        let closeB = (s.match(/\)/g) || []).length;
+        while(openB > closeB) { s += ")"; closeB++; }
+
+        // Injecting automatic degree multipliers for standard trig
+        if(isDeg) {
+            s = s.replace(/sin\(/g, "sin(1 deg * ");
+            s = s.replace(/cos\(/g, "cos(1 deg * ");
+            s = s.replace(/tan\(/g, "tan(1 deg * ");
+        }
+        return s;
     }
 
     function updateLivePreview() {
         try {
-            let raw = exprDiv.innerText;
-            if(raw === "0" || raw === "") { previewDiv.innerText = ""; return; }
-            let formatted = parseExpression(raw);
-            let res = eval(formatted);
-            if(res !== undefined && !isNaN(res)) {
-                previewDiv.innerText = Number.isInteger(res) ? res : parseFloat(res.toFixed(6));
+            let expr = exprDiv.innerText;
+            if(expr === "0" || expr === "") { previewDiv.innerText = ""; return; }
+            let parsed = cleanFormat(expr);
+            let res = math.evaluate(parsed);
+            if(res !== undefined && typeof res !== 'function') {
+                previewDiv.innerText = math.format(res, {precision: 8});
             }
-        } catch(e) {
-            previewDiv.innerText = "";
-        }
-    }
-
-    function parseExpression(str) {
-        let clean = str.replace(/÷/g, "/").replace(/×/g, "*").replace(/−/g, "-");
-        let openB = (clean.match(/\(/g) || []).length;
-        let closeB = (clean.match(/\)/g) || []).length;
-        while(openB > closeB) { clean += ")"; closeB++; }
-
-        // Degree configuration maps
-        clean = clean.replace(/sin\(/g, "Math.sin(" + Math.PI + "/180*");
-        clean = clean.replace(/cos\(/g, "Math.cos(" + Math.PI + "/180*");
-        clean = clean.replace(/tan\(/g, "Math.tan(" + Math.PI + "/180*");
-        
-        // Advanced formula updates
-        clean = clean.replace(/sinh\(/g, "Math.sinh(");
-        clean = clean.replace(/cosh\(/g, "Math.cosh(");
-        clean = clean.replace(/tanh\(/g, "Math.tanh(");
-        clean = clean.replace(/sqrt\(/g, "Math.sqrt(");
-        clean = clean.replace(/log\(/g, "Math.log10(");
-        clean = clean.replace(/ln\(/g, "Math.log(");
-        
-        if(clean.includes("^")) {
-            let parts = clean.split("^");
-            clean = `Math.pow(${parts[0]},${parts[1]})`;
-        }
-        return clean;
+        } catch(e) { previewDiv.innerText = ""; }
     }
 
     function calculate() {
         try {
-            let originalExpr = exprDiv.innerText;
-            if(originalExpr === "0") return;
-            
-            let formatted = parseExpression(originalExpr);
-            let result = eval(formatted);
-            
-            if(result === undefined || isNaN(result)) throw new Error();
-            
-            if (!Number.isInteger(result)) {
-                result = parseFloat(result.toFixed(8));
+            let expr = exprDiv.innerText;
+            if(expr === "0") return;
+            let parsed = cleanFormat(expr);
+            let res = math.evaluate(parsed);
+            if(res !== undefined) {
+                exprDiv.innerText = math.format(res, {precision: 10});
+                previewDiv.innerText = "";
             }
-            
-            saveToHistory(originalExpr, result);
-            exprDiv.innerText = result;
-            previewDiv.innerText = "";
-        } catch (error) {
-            exprDiv.innerText = "Error";
-            previewDiv.innerText = "";
-            setTimeout(() => { exprDiv.innerText = "0"; }, 1500);
+        } catch(e) {
+            exprDiv.innerText = "Syntax Error";
+            setTimeout(() => { exprDiv.innerText = "0"; }, 1200);
         }
     }
 
-    function saveToHistory(expr, res) {
-        let history = JSON.parse(localStorage.getItem("fluxaaCalc_hist") || "[]");
-        history.unshift({ expr, res });
-        if(history.length > 20) history.pop();
-        localStorage.setItem("fluxaaCalc_hist", JSON.stringify(history));
+    function copyResult() {
+        navigator.clipboard.writeText(exprDiv.innerText);
     }
 
-    function renderHistory() {
-        let history = JSON.parse(localStorage.getItem("fluxaaCalc_hist") || "[]");
-        if(history.length === 0) {
-            historyList.innerHTML = "<p style='text-align:center;color:var(--text-dim);margin-top:20px;'>No history yet</p>";
-            return;
-        }
-        historyList.innerHTML = history.map(item => `
-            <div class="history-item">
-                <div class="hist-expr">${item.expr}</div>
-                <div class="hist-res">${item.res}</div>
-            </div>
-        `).join("");
+    // Memory Controls Logic
+    function handleMemory(action) {
+        let currentVal = parseFloat(exprDiv.innerText) || 0;
+        if(action === 'MC') memoryVal = 0;
+        else if(action === 'MR') exprDiv.innerText = memoryVal.toString();
+        else if(action === 'M+') memoryVal += currentVal;
+        else if(action === 'M-') memoryVal -= currentVal;
     }
 
-    function clearHistory() {
-        localStorage.removeItem("fluxaaCalc_hist");
-        renderHistory();
+    // ADVANCED AREA: MATRIX MODULE
+    function solveMatrix(op) {
+        try {
+            let a = [
+                [parseFloat(document.getElementById("m11").value), parseFloat(document.getElementById("m12").value)],
+                [parseFloat(document.getElementById("m21").value), parseFloat(document.getElementById("m22").value)]
+            ];
+            if(op === 'det') {
+                let d = math.det(a);
+                document.getElementById("matrix-result").innerText = "Determinant (|A|): " + d;
+            } else if(op === 'inv') {
+                let inv = math.inv(a);
+                document.getElementById("matrix-result").innerText = `[${inv[0][0].toFixed(2)}, ${inv[0][1].toFixed(2)}]\n[${inv[1][0].toFixed(2)}, ${inv[1][1].toFixed(2)}]`;
+            }
+        } catch(e) { document.getElementById("matrix-result").innerText = "Error Matrix Not Invertible"; }
     }
-</script>
-</body>
-</html>
+
+    // ADVANCED AREA: CHART GRAPHING SCHEME
+    function plotGraph() {
+        try {
+            let inputExpr = document.getElementById("graph-expr").value;
+            const xValues = [];
+            const yValues = [];
+            for (let x = -10; x <= 10; x += 0.5) {
+                xValues.push(x);
+                yValues.push(math.evaluate(inputExpr, {x: x}));
+            }
+            if (chartInstance) chartInstance.destroy();
+            const ctx = document.getElementById('graphCanvas').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{ label: `f(x) = ${inputExpr}`, data: yValues, borderColor: '#00b7ff', fill: false, tension: 0.1 }]
+                },
+                options: { scales: { y: { beginAtZero: false } } }
+            });
+        } catch(e) { alert("Invalid graph function format."); }
+    }
+
+    // ADVANCED AREA: UNIT & CURRENCY CONVERTER CONTEXT
+    function updateConvOptions() { runConversion(); }
+    function runConversion() {
+        let type = document.getElementById("conv-type").value;
+        let val = parseFloat(document.getElementById("conv-input").value) || 0;
+        let output = "";
+        if(type === 'length') output = (val / 1000) + " km";
+        else if(type === 'weight') output = (val * 1000) + " grams";
+        else if(type === 'currency') output = "₹ " + (val * 83.50).toFixed(
