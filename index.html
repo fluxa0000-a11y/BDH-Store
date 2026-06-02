@@ -18,13 +18,22 @@
 </head>
 <body class="pb-24 md:pb-0 md:pl-64">
 
+    <!-- YOUR CUSTOM PWA INSTALL BANNER (TAILWIND STYLE) -->
+    <div id="installBanner" class="fixed top-0 left-0 right-0 bg-gradient-to-r from-red-600 to-purple-600 text-white px-4 py-3 z-50 flex-col sm:flex-row justify-between items-center gap-2 shadow-lg hidden">
+        <div class="flex items-center gap-2">
+            <span class="text-xl">📱</span>
+            <p class="text-xs sm:text-sm font-medium">Fluxaa Studio ko App ki tarah install karein aur fast access payein!</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button id="btnCancelInstall" class="px-3 py-1 text-xs font-medium bg-white/10 hover:bg-white/20 text-white rounded-lg transition">Later</button>
+            <button id="btnInstall" class="px-3 py-1 text-xs font-bold bg-white text-zinc-900 rounded-lg hover:bg-zinc-100 transition shadow">Install</button>
+        </div>
+    </div>
+
     <!-- TOP HEADER -->
     <header class="flex justify-between items-center px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40">
         <div class="flex items-center gap-3">
-            <!-- Mobile Menu Toggle Button -->
             <button onclick="toggleSidebar()" class="text-xl md:hidden block focus:outline-none hover:text-zinc-400">☰</button>
-            
-            <!-- Infinity Logo & Name -->
             <div class="flex items-center gap-2">
                 <span class="text-3xl font-bold text-red-500 leading-none">∞</span>
                 <span class="text-xl font-bold tracking-wide">Fluxaa</span>
@@ -39,28 +48,22 @@
     <!-- BACKDROP FOR MOBILE SIDEBAR -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
 
-    <!-- LEFT SIDEBAR (WEB SIDE MENU) -->
+    <!-- LEFT SIDEBAR -->
     <aside id="left-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-zinc-900 border-r border-zinc-800 pt-16 z-45 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
         <div class="p-4 space-y-2">
             <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold px-3 mb-2">Main Menu</p>
-            
             <button onclick="switchTab('home')" id="side-home" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition sidebar-active">
                 <span class="text-lg">🏠</span> Dashboard
             </button>
-            
             <button onclick="switchTab('analytics')" id="side-analytics" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
                 <span class="text-lg">📊</span> Analytics
             </button>
-
-            <!-- WEB TO APP IS NOW IN THE SIDEBAR -->
             <button onclick="switchTab('webtoapp')" id="side-webtoapp" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
                 <span class="text-lg">📱</span> Web To App
             </button>
-            
             <button onclick="switchTab('monetize')" id="side-monetize" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
                 <span class="text-lg">💰</span> Earn (Monetize)
             </button>
-            
             <button onclick="switchTab('apikeys')" id="side-apikeys" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
                 <span class="text-lg">🔑</span> API Keys
             </button>
@@ -96,29 +99,6 @@
                     <canvas id="ytStyleChart"></canvas>
                 </div>
             </div>
-
-            <!-- Trending Pages Section -->
-            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                <h3 class="text-sm font-medium text-zinc-300 mb-3 flex items-center gap-1">
-                    <span>🔥</span> Top Trending Pages
-                </h3>
-                <div class="grid md:grid-cols-2 gap-3">
-                    <div class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/50 rounded-xl">
-                        <div>
-                            <p class="text-sm font-medium">/calculator.html</p>
-                            <p class="text-xs text-zinc-500">Scientific Calculator</p>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">842 clicks</span>
-                    </div>
-                    <div class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/50 rounded-xl">
-                        <div>
-                            <p class="text-sm font-medium">/bg-remover.html</p>
-                            <p class="text-xs text-zinc-500">AI Background Remover</p>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">420 clicks</span>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- ================= ANALYTICS TAB ================= -->
@@ -128,51 +108,18 @@
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
                     <p class="text-xs text-zinc-400">Total Impressions</p>
                     <p class="text-xl font-bold mt-1">24.5K</p>
-                    <p class="text-xs text-emerald-400">▲ +18.2%</p>
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Average CTR</p>
-                    <p class="text-xl font-bold mt-1">6.4%</p>
-                    <p class="text-xs text-amber-400">▼ -0.5%</p>
                 </div>
             </div>
         </section>
 
-        <!-- ================= WEB TO APP (SIDEBAR TAB) ================= -->
+        <!-- ================= WEB TO APP TAB ================= -->
         <section id="sec-webtoapp" class="tab-content hidden">
             <h2 class="text-xl font-bold mb-4">Web to APK Engine</h2>
-            
-            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 mb-4">
-                <label class="text-xs font-medium text-zinc-400 block mb-2">Your Source URL</label>
-                <input type="text" value="https://fluxaaofficial.vercel.app" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-zinc-200 focus:outline-none" readonly>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <!-- Option 1: PWA -->
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-sm font-bold text-zinc-200">✨ 1. Progressive Web App (PWA)</h3>
-                    </div>
-                    <p class="text-xs text-zinc-400 mb-4">Isse user ke browser par automatic "Install App" ka option aane lagega.</p>
-                    <button onclick="alert('PWA Code generated!')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-medium py-2.5 rounded-xl border border-zinc-700 transition">
-                        Generate Manifest.json Code
-                    </button>
-                </div>
-
-                <!-- Option 2: APK Converters -->
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-sm font-bold text-zinc-200 mb-2">🚀 2. Instant Cloud APK Converters</h3>
-                    <div class="space-y-2">
-                        <a href="https://www.webintoapp.com/" target="_blank" class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-zinc-700 transition">
-                            <span class="text-xs font-medium text-zinc-200">WebIntoApp Cloud</span>
-                            <span class="text-xs text-red-400">➔</span>
-                        </a>
-                        <a href="https://gonative.io/" target="_blank" class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-zinc-700 transition">
-                            <span class="text-xs font-medium text-zinc-200">Median.co (GoNative)</span>
-                            <span class="text-xs text-red-400">➔</span>
-                        </a>
-                    </div>
-                </div>
+            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                <p class="text-xs text-zinc-400 mb-4">Isse user ke browser par automatic "Install App" ka option aane lagega.</p>
+                <button onclick="alert('PWA Code generated!')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-medium py-2.5 rounded-xl border border-zinc-700 transition">
+                    Generate Manifest.json Code
+                </button>
             </div>
         </section>
 
@@ -196,29 +143,25 @@
 
     </main>
 
-    <!-- BOTTOM NAVIGATION BAR (ONLY VISIBLE ON MOBILE FOR QUICK ACCESS) -->
+    <!-- MOBILE BOTTOM NAV -->
     <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 flex justify-around items-center py-2 z-30 md:hidden">
         <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-zinc-400 nav-active px-3 py-1 rounded-lg">
-            <span class="text-lg">🏠</span>
-            <span class="text-[10px] font-medium">Dashboard</span>
+            <span class="text-lg">🏠</span><span class="text-[10px] font-medium">Dashboard</span>
         </button>
         <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-0.5 text-zinc-400 px-3 py-1 rounded-lg">
-            <span class="text-lg">📊</span>
-            <span class="text-[10px] font-medium">Analytics</span>
+            <span class="text-lg">📊</span><span class="text-[10px] font-medium">Analytics</span>
         </button>
         <button onclick="toggleSidebar(); switchTab('webtoapp')" id="nav-webtoapp" class="flex flex-col items-center gap-0.5 text-zinc-400 px-3 py-1 rounded-lg">
-            <span class="text-lg">📱</span>
-            <span class="text-[10px] font-medium">Apps</span>
+            <span class="text-lg">📱</span><span class="text-[10px] font-medium">Apps</span>
         </button>
     </nav>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Toggle Sidebar Drawer on Mobile
+        // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('left-sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            
             if(sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -228,40 +171,24 @@
             }
         }
 
-        // Tab Switching Logic (Both Sidebar & Bottom Nav Sync)
+        // Tab Switch
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(section => section.classList.add('hidden'));
-            
-            // Remove active style from all elements
             document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('nav-active'));
             document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('sidebar-active'));
             
-            // Show Target Tab
             document.getElementById(`sec-${tabName}`).classList.remove('hidden');
-            
-            // Highlight Mobile Bottom Nav
-            if(document.getElementById(`nav-${tabName}`)) {
-                document.getElementById(`nav-${tabName}`).add('nav-active');
-            }
-            // Highlight Sidebar Button
+            if(document.getElementById(`nav-${tabName}`)) { document.getElementById(`nav-${tabName}`).classList.add('nav-active'); }
             document.getElementById(`side-${tabName}`).classList.add('sidebar-active');
-
-            // Close Mobile Sidebar Drawer automatically on selection
-            const sidebar = document.getElementById('left-sidebar');
-            if(!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
-                toggleSidebar();
-            }
         }
 
-        // Chart Data Definition
+        // Chart Config
         const chartData = {
             '7days': { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], data: [40, 55, 48, 70, 65, 90, 120] },
             '30days': { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [210, 340, 410, 520] },
             '1year': { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], data: [1200, 1900, 2400, 3100, 4200, 5500] },
             'lifetime': { labels: ['2025', '2026'], data: [1500, 8900] }
         };
-
         let ctx = document.getElementById('ytStyleChart').getContext('2d');
         let currentChart = new Chart(ctx, {
             type: 'line',
@@ -278,15 +205,7 @@
                     backgroundColor: 'rgba(255, 78, 78, 0.05)'
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 10 } } },
-                    y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', font: { size: 10 } } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
         function updateChart(timeframe) {
@@ -295,18 +214,48 @@
                 btn.classList.add('text-zinc-400');
             });
             document.getElementById(`btn-${timeframe}`).classList.add('bg-zinc-800', 'text-white');
-
             currentChart.data.labels = chartData[timeframe].labels;
             currentChart.data.datasets[0].data = chartData[timeframe].data;
             currentChart.update();
         }
 
-        setInterval(() => {
-            let liveCounter = document.getElementById('live-subs');
-            let currentCount = parseInt(liveCounter.innerText.replace(/,/g, ''));
-            let fluctuation = Math.floor(Math.random() * 5) - 2;
-            liveCounter.innerText = (currentCount + fluctuation).toLocaleString();
-        }, 3000);
+        // ========================================================
+        // HERE IS YOUR COPIED PWA LOGIC INTEGRATED WITH DOM TAGS
+        // ========================================================
+        let deferredPrompt;
+        const installBanner = document.getElementById('installBanner');
+        const btnInstall = document.getElementById('btnInstall');
+        const btnCancelInstall = document.getElementById('btnCancelInstall');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          // Tailwind compatibility: flex display toggle
+          installBanner.classList.remove('hidden');
+          installBanner.classList.add('flex');
+        });
+
+        btnInstall.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            installBanner.classList.remove('flex');
+            installBanner.classList.add('hidden');
+          }
+        });
+
+        btnCancelInstall.addEventListener('click', () => {
+          installBanner.classList.remove('flex');
+          installBanner.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+          console.log('Fluxaa App was installed successfully!');
+          installBanner.classList.remove('flex');
+          installBanner.classList.add('hidden');
+        });
     </script>
 </body>
 </html>
