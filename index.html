@@ -4,68 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fluxaa Studio</title>
+    <!-- Tailwind CSS for Modern UI -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js for YT Style Graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #0f0f0f; color: #ffffff; }
-        .nav-active { color: #ff4e4e; background-color: #27272a; }
-        .sidebar-active { color: #ff4e4e; background-color: #27272a; border-left: 4px solid #ff4e4e; }
+        .nav-active { color: #ff4e4e; }
     </style>
 </head>
-<body class="pb-24 md:pb-0 md:pl-64">
+<body class="pb-24">
 
-    <div id="installBanner" class="fixed top-0 left-0 right-0 bg-gradient-to-r from-red-600 to-purple-600 text-white px-4 py-3 z-50 flex-col sm:flex-row justify-between items-center gap-2 shadow-lg hidden">
+    <!-- TOP HEADER -->
+    <header class="flex justify-between items-center px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50">
         <div class="flex items-center gap-2">
-            <span class="text-xl">📱</span>
-            <p class="text-xs sm:text-sm font-medium">Fluxaa Studio ko App ki tarah install karein aur fast access payein!</p>
-        </div>
-        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <button id="btnCancelInstall" class="px-3 py-1 text-xs font-medium bg-white/10 hover:bg-white/20 text-white rounded-lg transition">Later</button>
-            <button id="btnInstall" class="px-3 py-1 text-xs font-bold bg-white text-zinc-900 rounded-lg hover:bg-zinc-100 transition shadow">Install</button>
-        </div>
-    </div>
-
-    <header class="flex justify-between items-center px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="text-xl md:hidden block focus:outline-none hover:text-zinc-400">☰</button>
-            <div class="flex items-center gap-2">
-                <span class="text-3xl font-bold text-red-500 leading-none">∞</span>
-                <span class="text-xl font-bold tracking-wide">Fluxaa</span>
-                <span class="text-xs bg-red-600 px-1.5 py-0.5 rounded text-white font-bold uppercase tracking-wider ml-1">Studio</span>
-            </div>
+            <span class="text-3xl font-bold text-red-500 leading-none">∞</span>
+            <span class="text-xl font-bold tracking-wide">Fluxaa</span>
+            <span class="text-xs bg-red-600 px-1.5 py-0.5 rounded text-white font-bold uppercase tracking-wider ml-1">Studio</span>
         </div>
         <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-red-500 flex items-center justify-center font-bold text-sm text-white">
             V
         </div>
     </header>
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden"></div>
+    <!-- MAIN SECTIONS CONTAINER -->
+    <main class="p-4 max-w-md mx-auto">
 
-    <aside id="left-sidebar" class="fixed top-0 left-0 bottom-0 w-64 bg-zinc-900 border-r border-zinc-800 pt-16 z-45 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-        <div class="p-4 space-y-2">
-            <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold px-3 mb-2">Main Menu</p>
-            <button onclick="switchTab('home')" id="side-home" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition sidebar-active">
-                <span class="text-lg">🏠</span> Dashboard
-            </button>
-            <button onclick="switchTab('analytics')" id="side-analytics" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
-                <span class="text-lg">📊</span> Analytics
-            </button>
-            <button onclick="switchTab('webtoapp')" id="side-webtoapp" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
-                <span class="text-lg">📱</span> Web To App
-            </button>
-            <button onclick="switchTab('monetize')" id="side-monetize" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
-                <span class="text-lg">💰</span> Earn (Monetize)
-            </button>
-            <button onclick="switchTab('apikeys')" id="side-apikeys" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition">
-                <span class="text-lg">🔑</span> API Keys
-            </button>
-        </div>
-    </aside>
-
-    <main class="p-4 max-w-4xl mx-auto">
-
+        <!-- ================= HOME TAB ================= -->
         <section id="sec-home" class="tab-content">
+            <!-- Live Users Card -->
             <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 mb-5 text-center relative overflow-hidden">
                 <div class="absolute top-2 right-3 flex items-center gap-1">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -76,234 +45,217 @@
                 <p class="text-xs text-emerald-400 font-medium">▲ +12% vs last hour</p>
             </div>
 
+            <!-- YT Style Graph Section -->
             <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 mb-5">
                 <h3 class="text-sm font-medium text-zinc-300 mb-3">Website Traffic (Clicks)</h3>
-                <div class="flex gap-2 mb-4 bg-zinc-950 p-1 rounded-xl border border-zinc-800 max-w-xs">
+                <div class="flex gap-2 mb-4 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
                     <button onclick="updateChart('7days')" id="btn-7days" class="flex-1 py-1.5 text-xs font-medium rounded-lg bg-zinc-800 text-white transition">7D</button>
                     <button onclick="updateChart('30days')" id="btn-30days" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">30D</button>
                     <button onclick="updateChart('1year')" id="btn-1year" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">1Y</button>
                     <button onclick="updateChart('lifetime')" id="btn-lifetime" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">Lifetime</button>
                 </div>
-                <div class="h-56">
+                <div class="h-48">
                     <canvas id="ytStyleChart"></canvas>
                 </div>
             </div>
 
+            <!-- Trending Pages Section -->
             <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
                 <h3 class="text-sm font-medium text-zinc-300 mb-3 flex items-center gap-1">
-                    <span>🔥</span> Top Trending Pages (Realtime)
+                    <span>🔥</span> Top Trending Pages
                 </h3>
-                <div class="grid md:grid-cols-2 gap-3">
-                    <div class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/50 rounded-xl">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-2.5 bg-zinc-950 border border-zinc-800/50 rounded-xl">
                         <div>
                             <p class="text-sm font-medium">/calculator.html</p>
                             <p class="text-xs text-zinc-500">Scientific Calculator</p>
                         </div>
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">842 clicks</span>
-                            <p class="text-[10px] text-emerald-400 mt-1">▲ 18%</p>
-                        </div>
+                        <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">842 clicks</span>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/50 rounded-xl">
+                    <div class="flex justify-between items-center p-2.5 bg-zinc-950 border border-zinc-800/50 rounded-xl">
                         <div>
                             <p class="text-sm font-medium">/bg-remover.html</p>
                             <p class="text-xs text-zinc-500">AI Background Remover</p>
                         </div>
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">420 clicks</span>
-                            <p class="text-[10px] text-emerald-400 mt-1">▲ 5%</p>
-                        </div>
+                        <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">420 clicks</span>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- ================= ANALYTICS TAB ================= -->
         <section id="sec-analytics" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Channel & Search Analytics</h2>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Total Clicks</p>
-                    <p class="text-xl font-bold mt-1">1.2K</p>
-                    <p class="text-xs text-emerald-400">▲ +14%</p>
+            <h2 class="text-xl font-bold mb-4">Channel Analytics</h2>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                    <p class="text-xs text-zinc-400">Total Impressions</p>
+                    <p class="text-lg font-bold mt-1">24.5K</p>
+                    <p class="text-[10px] text-emerald-400">▲ +18.2%</p>
                 </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Impressions</p>
-                    <p class="text-xl font-bold mt-1">24.5K</p>
-                    <p class="text-xs text-emerald-400">▲ +18.2%</p>
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
                     <p class="text-xs text-zinc-400">Average CTR</p>
-                    <p class="text-xl font-bold mt-1">6.4%</p>
-                    <p class="text-xs text-amber-400">▼ -0.5%</p>
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Avg. Position</p>
-                    <p class="text-xl font-bold mt-1">12.4</p>
-                    <p class="text-xs text-emerald-400">▲ Top 15</p>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-sm font-medium text-zinc-300 mb-3">Top Search Queries (Keywords)</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs p-2 bg-zinc-950 rounded-lg">
-                            <span class="text-zinc-300">1. fluxaa calculator</span>
-                            <span class="font-bold text-red-400">410 Clicks</span>
-                        </div>
-                        <div class="flex justify-between text-xs p-2 bg-zinc-950 rounded-lg">
-                            <span class="text-zinc-300">2. free bg remover online</span>
-                            <span class="font-bold text-red-400">280 Clicks</span>
-                        </div>
-                        <div class="flex justify-between text-xs p-2 bg-zinc-950 rounded-lg">
-                            <span class="text-zinc-300">3. online tool fluxaa</span>
-                            <span class="font-bold text-red-400">105 Clicks</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-sm font-medium text-zinc-300 mb-3">Audience Geography (Countries)</h3>
-                    <div class="space-y-2">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span>India 🇮🇳</span><span>80%</span>
-                            </div>
-                            <div class="w-full bg-zinc-950 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-red-500 h-full" style="width: 80%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span>United States 🇺🇸</span><span>12%</span>
-                            </div>
-                            <div class="w-full bg-zinc-950 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-purple-500 h-full" style="width: 12%"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-lg font-bold mt-1">6.4%</p>
+                    <p class="text-[10px] text-amber-400">▼ -0.5%</p>
                 </div>
             </div>
         </section>
 
+        <!-- ================= WEB TO APP (NEW TAB) ================= -->
         <section id="sec-webtoapp" class="tab-content hidden">
             <h2 class="text-xl font-bold mb-4">Web to APK Engine</h2>
+            
+            <!-- Target URL Input -->
             <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 mb-4">
                 <label class="text-xs font-medium text-zinc-400 block mb-2">Your Source URL</label>
-                <input type="text" value="https://fluxaaofficial.vercel.app" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-zinc-200 focus:outline-none" readonly>
-            </div>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-sm font-bold text-zinc-200 mb-2">✨ 1. Progressive Web App (PWA)</h3>
-                    <button onclick="alert('PWA Code generated!')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-medium py-2.5 rounded-xl border border-zinc-700 transition">
-                        Generate Manifest.json Code
-                    </button>
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                    <h3 class="text-sm font-bold text-zinc-200 mb-2">🚀 2. Instant Cloud APK Converters</h3>
-                    <div class="space-y-2">
-                        <a href="https://www.webintoapp.com/" target="_blank" class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-zinc-700 transition">
-                            <span class="text-xs font-medium text-zinc-200">WebIntoApp Cloud</span>
-                            <span class="text-xs text-red-400">➔</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-monetize" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Monetization Hub</h2>
-            
-            <div class="grid md:grid-cols-3 gap-4 mb-4">
-                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 text-center">
-                    <p class="text-xs text-zinc-400 uppercase tracking-wide">Estimated Revenue</p>
-                    <h1 class="text-3xl font-black text-emerald-400 my-2">$142.50</h1>
-                    <p class="text-[10px] text-zinc-500">Current Month Earnings</p>
-                </div>
-                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 md:col-span-2">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-medium text-zinc-300">Payment Release Progress</span>
-                        <span class="text-xs font-bold text-emerald-400">100% Completed</span>
-                    </div>
-                    <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden mb-2">
-                        <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full" style="width: 100%"></div>
-                    </div>
-                    <p class="text-[11px] text-zinc-400">Aapka balance release threshold ($100.00) ko par kar chuka hai.</p>
+                <div class="flex gap-2">
+                    <input type="text" value="https://fluxaaofficial.vercel.app" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-zinc-200 focus:outline-none focus:border-red-500" readonly>
                 </div>
             </div>
 
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-                <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-                    <div>
-                        <p class="text-xs text-zinc-400">Last Paid Payment</p>
-                        <p class="text-sm font-medium text-zinc-200">21 May 2026</p>
-                    </div>
-                    <span class="text-md font-bold text-zinc-300">$105.20</span>
+            <!-- Option 1: PWA Generator -->
+            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 mb-4">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-sm font-bold text-zinc-200">✨ 1. Progressive Web App (PWA)</h3>
+                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Recommended</span>
                 </div>
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-zinc-400">Tax Info Status:</span>
-                    <span class="text-emerald-400 font-bold">✓ Approved</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-apikeys" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Connected API Console</h2>
-            <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 max-w-md space-y-4">
-                <div>
-                    <label class="text-xs font-medium text-zinc-400 block mb-1">GSC API Console Key</label>
-                    <input type="text" id="gsc-key-field" value="AIzaSyA1B2C3D4E5F6G7H8I9J0K_GSC_KEY" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-300 font-mono tracking-wide focus:outline-none focus:border-red-500">
-                </div>
-                <div>
-                    <label class="text-xs font-medium text-zinc-400 block mb-1">AdSense Publisher ID</label>
-                    <input type="text" id="ads-key-field" value="pub-1234567890123456" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-300 font-mono tracking-wide focus:outline-none focus:border-red-500">
-                </div>
-                <button onclick="alert('Keys successfully saved in local system storage!')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-lg">
-                    Save Connections Securely
+                <p class="text-xs text-zinc-400 mb-3">Isse user ke browser par automatic "Install App" ka option aane lagega.</p>
+                <button onclick="alert('PWA Manifest & ServiceWorker code generated successfully!')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-medium py-2 rounded-xl border border-zinc-700 transition">
+                    Generate Manifest.json Code
                 </button>
+            </div>
+
+            <!-- Option 2: APK Converters -->
+            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                <h3 class="text-sm font-bold text-zinc-200 mb-1">🚀 2. Instant Cloud APK Converters</h3>
+                <p class="text-xs text-zinc-500 mb-3">In online automated cloud engines par link daalkar 1-click me `.apk` file download karein:</p>
+                
+                <div class="space-y-2">
+                    <a href="https://www.webintoapp.com/" target="_blank" class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/80 rounded-xl hover:border-zinc-700 transition group">
+                        <div>
+                            <p class="text-xs font-medium text-zinc-200">WebIntoApp Cloud</p>
+                            <p class="text-[10px] text-zinc-500">Supports push notifications & custom logos</p>
+                        </div>
+                        <span class="text-xs text-red-400 group-hover:translate-x-1 transition-transform">➔</span>
+                    </a>
+                    <a href="https://gonative.io/" target="_blank" class="flex justify-between items-center p-3 bg-zinc-950 border border-zinc-800/80 rounded-xl hover:border-zinc-700 transition group">
+                        <div>
+                            <p class="text-xs font-medium text-zinc-200">Median.co (GoNative)</p>
+                            <p class="text-[10px] text-zinc-500">Premium Android Studio compile system</p>
+                        </div>
+                        <span class="text-xs text-red-400 group-hover:translate-x-1 transition-transform">➔</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MONETIZE TAB ================= -->
+        <section id="sec-monetize" class="tab-content hidden">
+            <h2 class="text-xl font-bold mb-4">Monetization</h2>
+            <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 text-center mb-4">
+                <p class="text-xs text-zinc-400 uppercase tracking-wide">Estimated Next Payment</p>
+                <h1 class="text-4xl font-black text-emerald-400 my-2">$142.50</h1>
+            </div>
+        </section>
+
+        <!-- ================= API KEYS TAB ================= -->
+        <section id="sec-apikeys" class="tab-content hidden">
+            <h2 class="text-xl font-bold mb-4">Connected API Keys</h2>
+            <div class="space-y-3">
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                    <label class="text-xs font-medium text-zinc-400 block mb-1">GSC API Key</label>
+                    <input type="password" value="AIzaSyA1B2C3D4E5F6G7H8I9J0K_GSC_KEY" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-400 tracking-widest focus:outline-none" disabled>
+                </div>
             </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 flex justify-around items-center py-2 z-30 md:hidden">
-        <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-zinc-400 nav-active px-3 py-1 rounded-lg">
-            <span class="text-lg">🏠</span><span class="text-[10px] font-medium">Dashboard</span>
+    <!-- BOTTOM NAVIGATION BAR (YT STUDIO STYLE WITH 5 OPTIONS NOW) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 flex justify-around items-center py-2 z-50">
+        <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-zinc-400 transition nav-active">
+            <span class="text-lg">🏠</span>
+            <span class="text-[10px] font-medium">Dashboard</span>
         </button>
-        <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-0.5 text-zinc-400 px-3 py-1 rounded-lg">
-            <span class="text-lg">📊</span><span class="text-[10px] font-medium">Analytics</span>
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
+            <span class="text-lg">📊</span>
+            <span class="text-[10px] font-medium">Analytics</span>
         </button>
-        <button onclick="toggleSidebar(); switchTab('webtoapp')" id="nav-webtoapp" class="flex flex-col items-center gap-0.5 text-zinc-400 px-3 py-1 rounded-lg">
-            <span class="text-lg">📱</span><span class="text-[10px] font-medium">Apps</span>
+        <button onclick="switchTab('webtoapp')" id="nav-webtoapp" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
+            <span class="text-lg">📱</span>
+            <span class="text-[10px] font-medium">Web To App</span>
+        </button>
+        <button onclick="switchTab('monetize')" id="nav-monetize" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
+            <span class="text-lg">💰</span>
+            <span class="text-[10px] font-medium">Earn</span>
+        </button>
+        <button onclick="switchTab('apikeys')" id="nav-apikeys" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
+            <span class="text-lg">🔑</span>
+            <span class="text-[10px] font-medium">API Keys</span>
         </button>
     </nav>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('left-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if(sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(section => section.classList.add('hidden'));
             document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('nav-active'));
-            document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('sidebar-active'));
             
             document.getElementById(`sec-${tabName}`).classList.remove('hidden');
-            if(document.getElementById(`nav-${tabName}`)) { document.getElementById(`nav-${tabName}`).classList.add('nav-active'); }
-            document.getElementById(`side-${tabName}`).classList.add('sidebar-active');
+            document.getElementById(`nav-${tabName}`).classList.add('nav-active');
         }
 
         const chartData = {
             '7days': { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], data: [40, 55, 48, 70, 65, 90, 120] },
             '30days': { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [210, 340, 410, 520] },
             '1year': { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], data: [1200, 1900, 2400, 3100, 4200, 5500] },
-            'lifetime': { labels: ['2025', '2026']
+            'lifetime': { labels: ['2025', '2026'], data: [1500, 8900] }
+        };
+
+        let ctx = document.getElementById('ytStyleChart').getContext('2d');
+        let currentChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData['7days'].labels,
+                datasets: [{
+                    label: 'Clicks',
+                    data: chartData['7days'].data,
+                    borderColor: '#ff4e4e',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ff4e4e',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(255, 78, 78, 0.05)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 10 } } },
+                    y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', font: { size: 10 } } }
+                }
+            }
+        });
+
+        function updateChart(timeframe) {
+            document.querySelectorAll('#sec-home button').forEach(btn => {
+                btn.classList.remove('bg-zinc-800', 'text-white');
+                btn.classList.add('text-zinc-400');
+            });
+            document.getElementById(`btn-${timeframe}`).classList.add('bg-zinc-800', 'text-white');
+
+            currentChart.data.labels = chartData[timeframe].labels;
+            currentChart.data.datasets[0].data = chartData[timeframe].data;
+            currentChart.update();
+        }
+
+        setInterval(() => {
+            let liveCounter = document.getElementById('live-subs');
+            let currentCount = parseInt(liveCounter.innerText.replace(/,/g, ''));
+            let fluctuation = Math.floor(Math.random() * 5) - 2;
+            liveCounter.innerText = (currentCount + fluctuation).toLocaleString();
+        }, 3000);
+    </script>
+</body>
+</html>
