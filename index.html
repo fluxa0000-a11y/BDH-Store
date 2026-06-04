@@ -3,276 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxaa Studio</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Fluxaa Whisper | Anonymous Secret Messages</title>
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #0f0f0f; color: #ffffff; }
-        .nav-active { color: #ff4e4e; }
+        :root {
+            --bg-dark: #0a0f1d;
+            --panel-glass: rgba(30, 41, 59, 0.4);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --accent-pink: #ec4899;
+            --accent-blue: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { 
+            background: radial-gradient(circle at top right, #1e1b4b, #0a0f1d 60%);
+            color: var(--text-main); 
+            min-height: 100vh; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 40px;
+            flex-grow: 1;
+        }
+
+        /* Premium Glass Card Design */
+        .glass-card { 
+            background: var(--panel-glass); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 32px 24px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border-glass); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            text-align: center; 
+        }
+        
+        h1 { 
+            font-size: 2rem; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-blue)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 8px; 
+        }
+        
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.5; }
+
+        /* Input Controls */
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; text-align: left; }
+        label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .input-field { 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-glass); 
+            background: rgba(15, 23, 42, 0.6); 
+            color: white; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: all 0.3s ease; 
+        }
+        .input-field:focus { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(6, 182, 212, 0.2); }
+        .textarea-field { resize: none; height: 110px; }
+
+        /* Premium Action Buttons */
+        .btn-action { 
+            background: linear-gradient(135deg, var(--accent-pink), #db2777); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25); 
+        }
+        .btn-action:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4); }
+
+        /* Link Presentation Area */
+        .share-container { 
+            background: rgba(15, 23, 42, 0.8); 
+            border: 1px solid rgba(6, 182, 212, 0.3); 
+            padding: 16px; 
+            border-radius: 14px; 
+            margin-top: 24px; 
+            display: none; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .link-display { font-family: monospace; font-size: 0.9rem; color: #38bdf8; word-break: break-all; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
+
+        /* Inbox Styling */
+        .inbox-wrapper { margin-top: 8px; text-align: left; display: none; }
+        .inbox-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; }
+        .messages-grid { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
+        
+        .msg-bubble { 
+            background: rgba(255, 255, 255, 0.03); 
+            border-left: 4px solid var(--accent-pink); 
+            padding: 14px; 
+            border-radius: 0 12px 12px 12px; 
+            font-size: 0.95rem; 
+            line-height: 1.4;
+            border-top: 1px solid var(--border-glass);
+            border-right: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .messages-grid::-webkit-scrollbar { width: 6px; }
+        .messages-grid::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 10px; }
+
+        /* Screenshot Matched Professional Footer */
+        .fluxaa-footer {
+            margin-top: auto;
+            padding: 40px 0 20px 0;
+            text-align: center;
+            width: 100%;
+        }
+        .footer-text {
+            color: #7dd3fc;
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            opacity: 0.85;
+        }
+        .footer-link {
+            color: #00d2ff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 24px;
+            border-bottom: 2px dashed rgba(0, 210, 255, 0.4);
+            padding-bottom: 4px;
+            transition: opacity 0.2s ease;
+        }
+        .footer-link:hover { opacity: 0.8; }
+        .footer-copyright {
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .footer-copyright strong { color: #94a3b8; font-weight: 600; }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-    <header class="flex justify-between items-center px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50">
-        <div class="flex items-center gap-2">
-            <span class="text-3xl font-bold text-red-500 leading-none">∞</span>
-            <span class="text-xl font-bold tracking-wide">Fluxaa</span>
-            <span class="text-xs bg-red-600 px-1.5 py-0.5 rounded text-white font-bold uppercase tracking-wider ml-1">Studio</span>
+    <div class="main-wrapper">
+        <div class="glass-card" id="createContainer">
+            <div id="setupView">
+                <h1>Fluxaa Whisper</h1>
+                <p class="subtitle">Create your secure profile link and receive anonymous confessions from your friends.</p>
+                
+                <div class="input-group">
+                    <label>Enter Your Name</label>
+                    <input type="text" id="profileName" class="input-field" placeholder="e.g., Varun Goyal">
+                </div>
+                
+                <button class="btn-action" onclick="initiateUserLink()">Generate Profile Link</button>
+            </div>
+
+            <div id="messagingView" style="display: none;">
+                <h1>Send Secret Message</h1>
+                <p class="subtitle">To: <span id="recipient" style="color: var(--accent-blue); font-weight: bold;">User</span><br>They will never know who sent it. Speak your heart out! 🤫</p>
+                
+                <div class="input-group">
+                    <label>Your Anonymous Message</label>
+                    <textarea id="anonymousPayload" class="input-field textarea-field" placeholder="Type something honest, funny, or secret..."></textarea>
+                </div>
+                
+                <button class="btn-action" style="background: linear-gradient(135deg, var(--accent-blue), #0891b2); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);" onclick="transmitMessage()">Submit Anonymously 🚀</button>
+            </div>
+
+            <div class="share-container" id="linkDashboard">
+                <span style="font-size: 0.85rem; font-weight: bold; color: var(--text-muted); text-align: left;">Your Link is Ready! Share it on Instagram Bio/Stories:</span>
+                <div class="link-display" id="cleanLink"></div>
+                <button class="btn-action" style="padding: 10px; font-size: 0.9rem; background: #1e293b; border: 1px solid var(--border-glass); box-shadow: none;" onclick="copySystemLink()">Copy Clipboard</button>
+            </div>
         </div>
-        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-red-500 flex items-center justify-center font-bold text-sm text-white">
-            V
+
+        <div class="inbox-wrapper" id="inboxDisplayPanel">
+            <div class="inbox-title">
+                <span>📥</span> Your Confidential Messages Inbox:
+            </div>
+            <div class="messages-grid" id="inboxGrid">
+                </div>
         </div>
-    </header>
+    </div>
 
-    <main class="p-4 max-w-md mx-auto">
-
-        <section id="sec-home" class="tab-content">
-            <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 mb-5 text-center relative overflow-hidden">
-                <div class="absolute top-2 right-3 flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-[10px] text-zinc-400 font-bold uppercase">Live</span>
-                </div>
-                <p class="text-sm text-zinc-400 uppercase tracking-wider font-medium">Total Live Users (All Pages)</p>
-                <h1 id="live-subs" class="text-4xl font-extrabold my-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-400">1,482</h1>
-                <p id="live-status-text" class="text-xs text-emerald-400 font-medium">▲ +12% vs last hour</p>
-            </div>
-
-            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 mb-5">
-                <h3 class="text-sm font-medium text-zinc-300 mb-3">Website Traffic (Clicks)</h3>
-                <div class="flex gap-2 mb-4 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
-                    <button onclick="updateChart('7days')" id="btn-7days" class="flex-1 py-1.5 text-xs font-medium rounded-lg bg-zinc-800 text-white transition">7D</button>
-                    <button onclick="updateChart('30days')" id="btn-30days" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">30D</button>
-                    <button onclick="updateChart('1year')" id="btn-1year" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">1Y</button>
-                    <button onclick="updateChart('lifetime')" id="btn-lifetime" class="flex-1 py-1.5 text-xs font-medium rounded-lg text-zinc-400 transition">Lifetime</button>
-                </div>
-                <div class="h-48">
-                    <canvas id="ytStyleChart"></canvas>
-                </div>
-            </div>
-
-            <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
-                <h3 class="text-sm font-medium text-zinc-300 mb-3 flex items-center gap-1">
-                    <span>🔥</span> Top Trending Pages
-                </h3>
-                <div class="space-y-3" id="trending-container">
-                    <div class="flex justify-between items-center p-2.5 bg-zinc-950 border border-zinc-800/50 rounded-xl">
-                        <div>
-                            <p class="text-sm font-medium">/calculator.html</p>
-                            <p class="text-xs text-zinc-500">Scientific Calculator</p>
-                        </div>
-                        <span id="click-calc" class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">842 clicks</span>
-                    </div>
-                    <div class="flex justify-between items-center p-2.5 bg-zinc-950 border border-zinc-800/50 rounded-xl">
-                        <div>
-                            <p class="text-sm font-medium">/bg-remover.html</p>
-                            <p class="text-xs text-zinc-500">AI Background Remover</p>
-                        </div>
-                        <span id="click-bg" class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">420 clicks</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-analytics" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Channel Analytics</h2>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Total Impressions</p>
-                    <p id="val-impressions" class="text-lg font-bold mt-1">24.5K</p>
-                    <p class="text-[10px] text-emerald-400">▲ +18.2%</p>
-                </div>
-                <div class="bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                    <p class="text-xs text-zinc-400">Average CTR</p>
-                    <p id="val-ctr" class="text-lg font-bold mt-1">6.4%</p>
-                    <p class="text-[10px] text-amber-400">▼ -0.5%</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-monetize" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Monetization</h2>
-            <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 text-center mb-4">
-                <p class="text-xs text-zinc-400 uppercase tracking-wide">Estimated Next Payment</p>
-                <h1 id="val-earnings" class="text-4xl font-black text-emerald-400 my-2">$142.50</h1>
-            </div>
-        </section>
-
-        <section id="sec-apikeys" class="tab-content hidden">
-            <h2 class="text-xl font-bold mb-4">Connected API Setup</h2>
-            <div class="space-y-4">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <label class="text-xs font-medium text-zinc-300 block mb-1.5">Google Search Console API Key</label>
-                    <input type="password" id="input-gsc" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-200 tracking-wider focus:outline-none focus:border-red-500 transition" placeholder="Enter GSC Server API Key">
-                </div>
-
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <label class="text-xs font-medium text-zinc-300 block mb-1.5">Google AdSense Publisher ID</label>
-                    <input type="text" id="input-adsense" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-200 tracking-wider focus:outline-none focus:border-red-500 transition" placeholder="pub-xxxxxxxxxxxxxxxx">
-                </div>
-
-                <button onclick="saveApiKeys()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-xs transition uppercase tracking-wider shadow-md">
-                    Save Console Config
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 flex justify-around items-center py-2 z-50">
-        <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-zinc-400 transition nav-active">
-            <span class="text-lg">🏠</span>
-            <span class="text-[10px] font-medium">Dashboard</span>
-        </button>
-        <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
-            <span class="text-lg">📊</span>
-            <span class="text-[10px] font-medium">Analytics</span>
-        </button>
-        <button onclick="switchTab('monetize')" id="nav-monetize" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
-            <span class="text-lg">💰</span>
-            <span class="text-[10px] font-medium">Earn</span>
-        </button>
-        <button onclick="switchTab('apikeys')" id="nav-apikeys" class="flex flex-col items-center gap-0.5 text-zinc-400 transition">
-            <span class="text-lg">🔑</span>
-            <span class="text-[10px] font-medium">API Keys</span>
-        </button>
-    </nav>
+    <footer class="fluxaa-footer">
+        <div class="footer-text">For More Information About Fluxaa</div>
+        <a href="https://fluxaa.com" class="footer-link" target="_blank">Click Here 🚀</a>
+        <div class="footer-copyright">
+            © 2026 <strong>Fluxaa Technologies</strong>. All rights reserved.
+        </div>
+    </footer>
 
     <script>
-        // Tab switching controller
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(section => section.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('nav-active'));
-            
-            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabName}`).classList.add('nav-active');
-        }
+        // Extraction parameters logic
+        const queryParams = new URLSearchParams(window.location.search);
+        const encodedUser = queryParams.get('id');
 
-        // Mock Static Data (Fake data placeholder)
-        const fakeChartData = {
-            '7days': [40, 55, 48, 70, 65, 90, 120],
-            '30days': [210, 340, 410, 520],
-            '1year': [1200, 1900, 2400, 3100, 4200, 5500],
-            'lifetime': [1500, 8900]
-        };
-
-        const chartLabels = {
-            '7days': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            '30days': ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            '1year': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            'lifetime': ['2025', '2026']
-        };
-
-        // Initialize Chart.js
-        let ctx = document.getElementById('ytStyleChart').getContext('2d');
-        let currentChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartLabels['7days'],
-                datasets: [{
-                    label: 'Clicks',
-                    data: fakeChartData['7days'],
-                    borderColor: '#ff4e4e',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#ff4e4e',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(255, 78, 78, 0.05)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 10 } } },
-                    y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', font: { size: 10 } } }
-                }
-            }
-        });
-
-        function updateChart(timeframe) {
-            document.querySelectorAll('#sec-home button').forEach(btn => {
-                btn.classList.remove('bg-zinc-800', 'text-white');
-                btn.classList.add('text-zinc-400');
-            });
-            document.getElementById(`btn-${timeframe}`).classList.add('bg-zinc-800', 'text-white');
-
-            // API Check: If real API keys exist, updateChart can parse API response arrays instead of fake arrays.
-            const savedGSC = localStorage.getItem('fluxaa_gsc_key');
-            if (savedGSC && savedGSC.trim() !== "" && !savedGSC.startsWith('fake_')) {
-                // Future API Fetch implementation goes here
-                console.log("Fetching actual time-series from GSC API endpoint...");
-            } else {
-                currentChart.data.datasets[0].data = fakeChartData[timeframe];
-            }
-            
-            currentChart.data.labels = chartLabels[timeframe];
-            currentChart.update();
-        }
-
-        // Real-time fluctuating live simulation
-        setInterval(() => {
-            let liveCounter = document.getElementById('live-subs');
-            if (liveCounter) {
-                let currentCount = parseInt(liveCounter.innerText.replace(/,/g, ''));
-                let fluctuation = Math.floor(Math.random() * 5) - 2;
-                liveCounter.innerText = (currentCount + fluctuation).toLocaleString();
-            }
-        }, 3000);
-
-        // ========================================================
-        // API INTERACTIVE MANAGEMENT & LOCALSTORAGE STORAGE
-        // ========================================================
-        
-        // Window on-load check: Restore saved keys and convert fake numbers if genuine key is found.
         window.onload = function() {
-            const savedGSC = localStorage.getItem('fluxaa_gsc_key');
-            const savedAdSense = localStorage.getItem('fluxaa_adsense_id');
-
-            if (savedGSC) document.getElementById('input-gsc').value = savedGSC;
-            if (savedAdSense) document.getElementById('input-adsense').value = savedAdSense;
-
-            validateAndRenderRealData(savedGSC, savedAdSense);
+            if (encodedUser) {
+                try {
+                    // Safe string parsing engine
+                    const decodedName = atob(encodedUser);
+                    document.getElementById("setupView").style.display = "none";
+                    document.getElementById("messagingView").style.display = "block";
+                    document.getElementById("recipient").innerText = decodedName;
+                } catch(e) {
+                    window.location.href = window.location.href.split('?')[0];
+                }
+            } else {
+                syncInboxDashboard();
+            }
         };
 
-        // Save Function called by click listener
-        function saveApiKeys() {
-            const gscValue = document.getElementById('input-gsc').value;
-            const adsenseValue = document.getElementById('input-adsense').value;
+        // 1. URL Architecture Core
+        function initiateUserLink() {
+            const rawName = document.getElementById("profileName").value.trim();
+            if (rawName === "") return alert("Please type your name first!");
 
-            // Save variables to persistent local device storage
-            localStorage.setItem('fluxaa_gsc_key', gscValue);
-            localStorage.setItem('fluxaa_adsense_id', adsenseValue);
-
-            alert('API configurations saved securely! Updating data nodes...');
-            validateAndRenderRealData(gscValue, adsenseValue);
+            const secureId = btoa(rawName); // Base64 compression
+            const sourceUrl = window.location.href.split('?')[0];
+            const structuredLink = `${sourceUrl}?id=${secureId}`;
+            
+            document.getElementById("cleanLink").innerText = structuredLink;
+            document.getElementById("linkDashboard").style.display = "flex";
+            
+            localStorage.setItem("fluxaa_active_session", rawName);
+            syncInboxDashboard();
         }
 
-        // Logic to clear fake elements when real entries exist
-        function validateAndRenderRealData(gscKey, adsenseId) {
-            // Check if user entered anything valid (and not an empty or test template format)
-            const isGscActive = gscKey && gscKey.trim() !== "" && !gscKey.startsWith('AIzaSyA1B2');
-            const isAdSenseActive = adsenseId && adsenseId.trim() !== "" && adsenseId.startsWith('pub-') && adsenseId !== 'pub-1234567890123456';
+        // 2. Clipboard management system
+        function copySystemLink() {
+            const targetLink = document.getElementById("cleanLink").innerText;
+            navigator.clipboard.writeText(targetLink);
+            alert("Link successfully copied to clipboard! 🔥");
+        }
 
-            if (isGscActive) {
-                // 1. Clear placeholder traffic numbers and inject empty live hooks for real fetch sequences
-                document.getElementById('live-subs').innerText = "0"; 
-                document.getElementById('live-status-text').innerText = "Syncing with live Search Console telemetry...";
-                document.getElementById('val-impressions').innerText = "--";
-                document.getElementById('val-ctr').innerText = "--";
-                document.getElementById('click-calc').innerText = "Syncing...";
-                document.getElementById('click-bg').innerText = "Syncing...";
+        // 3. Local Storage Pipeline Write Execution
+        function transmitMessage() {
+            const clientMsg = document.getElementById("anonymousPayload").value.trim();
+            if (clientMsg === "") return alert("Message box cannot be empty!");
 
-                // 2. Here your actual network async fetch calls to script endpoints will execute:
-                // example: fetchRealGSCTraffic(gscKey);
-                console.log("Status: Real GSC API loaded. Placeholders cleared.");
-            }
+            const targetProfile = atob(encodedUser);
+            let messageStore = JSON.parse(localStorage.getItem(`whisper_${targetProfile}`)) || [];
+            messageStore.push(clientMsg);
+            
+            localStorage.setItem(`whisper_${targetProfile}`, JSON.stringify(messageStore));
+            
+            alert("🚀 Secret encrypted message successfully delivered! They will see it on their dashboard.");
+            document.getElementById("anonymousPayload").value = "";
+        }
 
-            if (isAdSenseActive) {
-                // Clear out fake $142 earnings display block to prevent UI layout confusion
-                document.getElementById('val-earnings').innerText = "$0.00";
-                console.log("Status: Real AdSense Channel ID connected. Revenue tracker initialized.");
+        // 4. Local Storage Read Engine UI Renderer
+        function syncInboxDashboard() {
+            const profileSession = localStorage.getItem("fluxaa_active_session");
+            if (!profileSession) return;
+
+            document.getElementById("profileName").value = profileSession;
+            
+            const grid = document.getElementById("inboxGrid");
+            const panel = document.getElementById("inboxDisplayPanel");
+            
+            let userMessages = JSON.parse(localStorage.getItem(`whisper_${profileSession}`)) || [];
+            grid.innerHTML = "";
+
+            panel.style.display = "block";
+            if (userMessages.length > 0) {
+                userMessages.reverse().forEach(message => {
+                    const bubble = document.createElement("div");
+                    bubble.className = "msg-bubble";
+                    bubble.innerText = message;
+                    grid.appendChild(bubble);
+                });
+            } else {
+                grid.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); text-align:center; padding: 20px;">No messages received yet. Share your link above to start collecting confessions!</div>`;
             }
         }
     </script>
