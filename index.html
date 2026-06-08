@@ -3,300 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxaa Whisper | Anonymous Secret Messages</title>
+    <title>Fluxaa Aviator - Virtual Simulation</title>
+    <!-- Tailwind CSS for Gen Z Neon Tech Styling -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        :root {
-            --bg-dark: #0a0f1d;
-            --panel-glass: rgba(30, 41, 59, 0.4);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --accent-pink: #ec4899;
-            --accent-blue: #06b6d4;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+        @keyframes fly {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        body { 
-            background: radial-gradient(circle at top right, #1e1b4b, #0a0f1d 60%);
-            color: var(--text-main); 
-            min-height: 100vh; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-        }
-
-        .main-wrapper {
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            margin-top: 40px;
-            flex-grow: 1;
-        }
-
-        /* Premium Glass Card Design */
-        .glass-card { 
-            background: var(--panel-glass); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 32px 24px; 
-            border-radius: 24px; 
-            border: 1px solid var(--border-glass); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
-            text-align: center; 
-        }
-        
-        h1 { 
-            font-size: 2rem; 
-            font-weight: 800; 
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--accent-pink), var(--accent-blue)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin-bottom: 8px; 
-        }
-        
-        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.5; }
-
-        /* Input Controls */
-        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; text-align: left; }
-        label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .input-field { 
-            padding: 14px 16px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border-glass); 
-            background: rgba(15, 23, 42, 0.6); 
-            color: white; 
-            font-size: 1rem; 
-            outline: none; 
-            transition: all 0.3s ease; 
-        }
-        .input-field:focus { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(6, 182, 212, 0.2); }
-        .textarea-field { resize: none; height: 110px; }
-
-        /* Premium Action Buttons */
-        .btn-action { 
-            background: linear-gradient(135deg, var(--accent-pink), #db2777); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: all 0.2s ease; 
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25); 
-        }
-        .btn-action:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4); }
-
-        /* Link Presentation Area */
-        .share-container { 
-            background: rgba(15, 23, 42, 0.8); 
-            border: 1px solid rgba(6, 182, 212, 0.3); 
-            padding: 16px; 
-            border-radius: 14px; 
-            margin-top: 24px; 
-            display: none; 
-            flex-direction: column; 
-            gap: 12px; 
-        }
-        .link-display { font-family: monospace; font-size: 0.9rem; color: #38bdf8; word-break: break-all; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
-
-        /* Inbox Styling */
-        .inbox-wrapper { margin-top: 8px; text-align: left; display: none; }
-        .inbox-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; }
-        .messages-grid { display: flex; flex-direction: column; gap: 12px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
-        
-        .msg-bubble { 
-            background: rgba(255, 255, 255, 0.03); 
-            border-left: 4px solid var(--accent-pink); 
-            padding: 14px; 
-            border-radius: 0 12px 12px 12px; 
-            font-size: 0.95rem; 
-            line-height: 1.4;
-            border-top: 1px solid var(--border-glass);
-            border-right: 1px solid var(--border-glass);
-            border-bottom: 1px solid var(--border-glass);
-        }
-
-        .messages-grid::-webkit-scrollbar { width: 6px; }
-        .messages-grid::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 10px; }
-
-        /* Screenshot Matched Professional Footer */
-        .fluxaa-footer {
-            margin-top: auto;
-            padding: 40px 0 20px 0;
-            text-align: center;
-            width: 100%;
-        }
-        .footer-text {
-            color: #7dd3fc;
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin-bottom: 8px;
-            opacity: 0.85;
-        }
-        .footer-link {
-            color: #00d2ff;
-            font-size: 1.6rem;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 24px;
-            border-bottom: 2px dashed rgba(0, 210, 255, 0.4);
-            padding-bottom: 4px;
-            transition: opacity 0.2s ease;
-        }
-        .footer-link:hover { opacity: 0.8; }
-        .footer-copyright {
-            color: #475569;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .footer-copyright strong { color: #94a3b8; font-weight: 600; }
+        .plane-anim { animation: fly 1.5s infinite ease-in-out; }
     </style>
 </head>
-<body>
+<body class="bg-neutral-950 text-white font-sans flex flex-col min-h-screen justify-between selection:bg-cyan-500 selection:text-neutral-950">
 
-    <div class="main-wrapper">
-        <div class="glass-card" id="createContainer">
-            <div id="setupView">
-                <h1>Fluxaa Whisper</h1>
-                <p class="subtitle">Create your secure profile link and receive anonymous confessions from your friends.</p>
-                
-                <div class="input-group">
-                    <label>Enter Your Name</label>
-                    <input type="text" id="profileName" class="input-field" placeholder="e.g., Varun Goyal">
-                </div>
-                
-                <button class="btn-action" onclick="initiateUserLink()">Generate Profile Link</button>
+    <!-- Header / Navbar -->
+    <header class="p-4 border-b border-neutral-900 flex justify-between items-center bg-neutral-900/40 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-cyan-400 font-black text-2xl tracking-tighter">₣</span>
+            <span class="font-black tracking-widest text-xl bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">FLUXAA</span>
+        </div>
+        <div class="bg-neutral-900 px-4 py-2 rounded-xl flex items-center gap-2 border border-neutral-800 shadow-inner">
+            <span class="text-amber-400 font-bold text-sm">🪙 Coins:</span>
+            <span id="coin-balance" class="font-mono font-bold text-base text-amber-300">1000</span>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Left Side: Live Betting Lobby (Simulated Players) -->
+        <div class="lg:col-span-1 bg-neutral-900/60 border border-neutral-900 rounded-2xl p-4 flex flex-col h-[400px] lg:h-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-neutral-800">
+                <h3 class="text-xs font-bold text-neutral-400 tracking-wider uppercase">Live Bets</h3>
+                <span id="player-count" class="text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full font-mono font-bold">42 Active</span>
             </div>
-
-            <div id="messagingView" style="display: none;">
-                <h1>Send Secret Message</h1>
-                <p class="subtitle">To: <span id="recipient" style="color: var(--accent-blue); font-weight: bold;">User</span><br>They will never know who sent it. Speak your heart out! 🤫</p>
-                
-                <div class="input-group">
-                    <label>Your Anonymous Message</label>
-                    <textarea id="anonymousPayload" class="input-field textarea-field" placeholder="Type something honest, funny, or secret..."></textarea>
-                </div>
-                
-                <button class="btn-action" style="background: linear-gradient(135deg, var(--accent-blue), #0891b2); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);" onclick="transmitMessage()">Submit Anonymously 🚀</button>
-            </div>
-
-            <div class="share-container" id="linkDashboard">
-                <span style="font-size: 0.85rem; font-weight: bold; color: var(--text-muted); text-align: left;">Your Link is Ready! Share it on Instagram Bio/Stories:</span>
-                <div class="link-display" id="cleanLink"></div>
-                <button class="btn-action" style="padding: 10px; font-size: 0.9rem; background: #1e293b; border: 1px solid var(--border-glass); box-shadow: none;" onclick="copySystemLink()">Copy Clipboard</button>
+            <!-- Live Bets Scroll Container -->
+            <div id="live-bets-container" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs font-mono scrollbar-thin">
+                <!-- Dynamically populated by JS -->
             </div>
         </div>
 
-        <div class="inbox-wrapper" id="inboxDisplayPanel">
-            <div class="inbox-title">
-                <span>📥</span> Your Confidential Messages Inbox:
+        <!-- Right Side: Main Game Screen & Controls -->
+        <div class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- History Bar (Top multipliers) -->
+            <div id="history-bar" class="bg-neutral-900/40 border border-neutral-900 rounded-xl p-2 flex gap-2 overflow-x-hidden items-center h-10">
+                <span class="text-[10px] font-bold text-neutral-500 tracking-wider uppercase mr-2 shrink-0">History:</span>
+                <!-- Multipliers will inject here -->
+                <span class="text-xs bg-neutral-800 text-purple-400 px-2 py-0.5 rounded font-bold font-mono">2.45x</span>
+                <span class="text-xs bg-neutral-800 text-cyan-400 px-2 py-0.5 rounded font-bold font-mono">1.12x</span>
+                <span class="text-xs bg-neutral-800 text-amber-400 px-2 py-0.5 rounded font-bold font-mono">5.80x</span>
             </div>
-            <div class="messages-grid" id="inboxGrid">
-                </div>
-        </div>
-    </div>
 
-    <footer class="fluxaa-footer">
-        <div class="footer-text">For More Information About Fluxaa</div>
-        <a href="https://fluxaa.com" class="footer-link" target="_blank">Click Here 🚀</a>
-        <div class="footer-copyright">
-            © 2026 <strong>Fluxaa Technologies</strong>. All rights reserved.
+            <!-- Graph/Animation Screen -->
+            <div class="bg-neutral-900 border border-neutral-800 rounded-2xl h-80 relative overflow-hidden flex flex-col items-center justify-center shadow-2xl">
+                <!-- Grid Background Lines -->
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
+                
+                <!-- Big Live Multiplier Display -->
+                <div id="multiplier-display" class="text-6xl md:text-7xl font-black font-mono tracking-tighter text-white z-10 select-none transition-all duration-75">
+                    1.00x
+                </div>
+                <div id="status-message" class="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-2 z-10 select-none">
+                    Waiting for next round...
+                </div>
+
+                <!-- Animated Custom Plane (₣ Logo) -->
+                <div id="plane" class="absolute left-12 bottom-12 text-5xl text-cyan-400 font-black z-10 hidden plane-anim select-none filter drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                    ₣
+                </div>
+            </div>
+
+            <!-- Betting Control Panel -->
+            <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-xl">
+                <div>
+                    <label class="text-[10px] text-neutral-500 font-bold block mb-1 tracking-wider uppercase">Bet Amount (Virtual Coins)</label>
+                    <input id="bet-input" type="number" value="100" min="10" step="10" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3.5 font-mono font-bold text-lg text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                </div>
+
+                <div class="flex items-end">
+                    <!-- Action Buttons -->
+                    <button id="bet-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] transition-all text-neutral-950 font-black text-lg py-3.5 rounded-xl cursor-pointer tracking-wider uppercase shadow-lg shadow-cyan-500/20">
+                        Place Bet
+                    </button>
+                    <button id="cashout-btn" class="w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.99] transition-all text-neutral-950 font-black text-lg py-3.5 rounded-xl cursor-pointer tracking-wider uppercase shadow-lg shadow-amber-500/20 hidden">
+                        Cash Out
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- AdSense Optimized Corporate Footer -->
+    <footer class="p-6 border-t border-neutral-900 bg-neutral-950 text-center text-[10px] text-neutral-600 flex flex-col gap-2">
+        <div class="font-semibold tracking-wide">Powered by Fluxaa Technologies — A Company Of Gen Z's</div>
+        <div class="max-w-2xl mx-auto opacity-60 leading-relaxed">
+            Disclaimer: This application is a 100% free virtual coin simulation game intended for entertainment purposes only. No real money deposits, withdrawals, or gambling services are provided or supported.
         </div>
     </footer>
 
+    <!-- Core Game Logic Script -->
     <script>
-        // Extraction parameters logic
-        const queryParams = new URLSearchParams(window.location.search);
-        const encodedUser = queryParams.get('id');
+        let balance = 1000;
+        let currentBet = 0;
+        let multiplier = 1.00;
+        let gameInterval = null;
+        let lobbyInterval = null;
+        let crashPoint = 0;
+        let isGameRunning = false;
 
-        window.onload = function() {
-            if (encodedUser) {
-                try {
-                    // Safe string parsing engine
-                    const decodedName = atob(encodedUser);
-                    document.getElementById("setupView").style.display = "none";
-                    document.getElementById("messagingView").style.display = "block";
-                    document.getElementById("recipient").innerText = decodedName;
-                } catch(e) {
-                    window.location.href = window.location.href.split('?')[0];
+        // DOM Elements
+        const coinBalanceEl = document.getElementById('coin-balance');
+        const multiplierDisplayEl = document.getElementById('multiplier-display');
+        const statusMessageEl = document.getElementById('status-message');
+        const planeEl = document.getElementById('plane');
+        const betInputEl = document.getElementById('bet-input');
+        const betBtn = document.getElementById('bet-btn');
+        const cashoutBtn = document.getElementById('cashout-btn');
+        const historyBar = document.getElementById('history-bar');
+        const liveBetsContainer = document.getElementById('live-bets-container');
+
+        // Fake Usernames for Lobby Simulation
+        const fakeUsers = ['Rohan_G', 'Ananya_Nx', 'Kabir_Tech', 'Z_FluX', 'Sanya_99', 'Aryan_Dev', 'Ishita_X', 'Rahul_V', 'Preet_Z', 'Vansh_01'];
+
+        // Initialize Live Bets UI
+        function generateLobbyBets() {
+            liveBetsContainer.innerHTML = '';
+            fakeUsers.forEach(user => {
+                const amount = Math.floor(Math.random() * 50) * 10 + 50;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-neutral-950/40 p-2 rounded border border-neutral-900/60';
+                div.innerHTML = `
+                    <span class="text-neutral-400 font-medium">${user}</span>
+                    <div class="flex gap-3 items-center">
+                        <span class="text-neutral-500">🪙${amount}</span>
+                        <span class="status-tag text-neutral-600 text-[10px] font-bold">Betting...</span>
+                    </div>
+                `;
+                liveBetsContainer.appendChild(div);
+            });
+        }
+
+        // Run Simulated Player Cashouts during the game
+        function updateLobbyDuringGame(currentMult) {
+            const rows = liveBetsContainer.children;
+            for (let row of rows) {
+                const tag = row.querySelector('.status-tag');
+                if (tag && tag.textContent === 'Betting...' && Math.random() < 0.05) {
+                    tag.textContent = `${currentMult.toFixed(2)}x`;
+                    tag.className = 'status-tag text-green-400 font-bold text-[10px]';
                 }
-            } else {
-                syncInboxDashboard();
-            }
-        };
-
-        // 1. URL Architecture Core
-        function initiateUserLink() {
-            const rawName = document.getElementById("profileName").value.trim();
-            if (rawName === "") return alert("Please type your name first!");
-
-            const secureId = btoa(rawName); // Base64 compression
-            const sourceUrl = window.location.href.split('?')[0];
-            const structuredLink = `${sourceUrl}?id=${secureId}`;
-            
-            document.getElementById("cleanLink").innerText = structuredLink;
-            document.getElementById("linkDashboard").style.display = "flex";
-            
-            localStorage.setItem("fluxaa_active_session", rawName);
-            syncInboxDashboard();
-        }
-
-        // 2. Clipboard management system
-        function copySystemLink() {
-            const targetLink = document.getElementById("cleanLink").innerText;
-            navigator.clipboard.writeText(targetLink);
-            alert("Link successfully copied to clipboard! 🔥");
-        }
-
-        // 3. Local Storage Pipeline Write Execution
-        function transmitMessage() {
-            const clientMsg = document.getElementById("anonymousPayload").value.trim();
-            if (clientMsg === "") return alert("Message box cannot be empty!");
-
-            const targetProfile = atob(encodedUser);
-            let messageStore = JSON.parse(localStorage.getItem(`whisper_${targetProfile}`)) || [];
-            messageStore.push(clientMsg);
-            
-            localStorage.setItem(`whisper_${targetProfile}`, JSON.stringify(messageStore));
-            
-            alert("🚀 Secret encrypted message successfully delivered! They will see it on their dashboard.");
-            document.getElementById("anonymousPayload").value = "";
-        }
-
-        // 4. Local Storage Read Engine UI Renderer
-        function syncInboxDashboard() {
-            const profileSession = localStorage.getItem("fluxaa_active_session");
-            if (!profileSession) return;
-
-            document.getElementById("profileName").value = profileSession;
-            
-            const grid = document.getElementById("inboxGrid");
-            const panel = document.getElementById("inboxDisplayPanel");
-            
-            let userMessages = JSON.parse(localStorage.getItem(`whisper_${profileSession}`)) || [];
-            grid.innerHTML = "";
-
-            panel.style.display = "block";
-            if (userMessages.length > 0) {
-                userMessages.reverse().forEach(message => {
-                    const bubble = document.createElement("div");
-                    bubble.className = "msg-bubble";
-                    bubble.innerText = message;
-                    grid.appendChild(bubble);
-                });
-            } else {
-                grid.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); text-align:center; padding: 20px;">No messages received yet. Share your link above to start collecting confessions!</div>`;
             }
         }
+
+        // Main Bet Button Action
+        betBtn.addEventListener('click', () => {
+            const betAmount = parseInt(betInputEl.value);
+
+            if (isNaN(betAmount) || betAmount < 10) {
+                alert('Minimum virtual bet is 10 coins.');
+                return;
+            }
+            if (betAmount > balance) {
+                alert('Insufficient virtual coins! Free ad refill feature coming in next step.');
+                return;
+            }
+
+            balance -= betAmount;
+            currentBet = betAmount;
+            coinBalanceEl.textContent = balance;
+            
+            startGame();
+        });
+
+        // Cash Out Action
+        cashoutBtn.addEventListener('click', () => {
+            if (!isGameRunning) return;
+
+            let winnings = Math.floor(currentBet * multiplier);
+            balance += winnings;
+            coinBalanceEl.textContent = balance;
+
+            statusMessageEl.textContent = `Cashed out at ${multiplier.toFixed(2)}x! Won 🪙${winnings}`;
+            statusMessageEl.className = 'text-green-400 text-xs font-bold uppercase tracking-widest mt-2 z-10';
+
+            resetControls();
+        });
+
+        function startGame() {
+            isGameRunning = true;
+            multiplier = 1.00;
+            generateLobbyBets();
+            
+            // Random Number Generator (RNG) Logic 
+            // 10% instant crash rate at 1.00x, else random multipliers up to 8x
+            crashPoint = Math.random() < 0.10 ? 1.00 : (1 + Math.random() * 7).toFixed(2);
+
+            betBtn.classList.add('hidden');
+            cashoutBtn.classList.remove('hidden');
+            betInputEl.disabled = true;
+            planeEl.classList.remove('hidden');
+            statusMessageEl.textContent = "The plane is flying...";
+            statusMessageEl.className = 'text-xs font-bold text-neutral-500 uppercase tracking-widest mt-2 z-10';
+
+            // Core Engine Loop (Ticks every 80ms)
+            gameInterval = setInterval(() => {
+                multiplier += 0.02; 
+                multiplierDisplayEl.textContent = `${multiplier.toFixed(2)}x`;
+                
+                updateLobbyDuringGame(multiplier);
+
+                if (multiplier >= crashPoint) {
+                    clearInterval(gameInterval);
+                    handleCrash();
+                }
+            }, 80);
+        }
+
+        function handleCrash() {
+            isGameRunning = false;
+            multiplierDisplayEl.textContent = "FLEW AWAY!";
+            multiplierDisplayEl.classList.add('text-red-500');
+            statusMessageEl.textContent = `Crashed at ${parseFloat(crashPoint).toFixed(2)}x`;
+            statusMessageEl.className = 'text-xs font-bold text-red-500 uppercase tracking-widest mt-2 z-10';
+            planeEl.classList.add('hidden');
+
+            // Update Lobby users who didn't cash out
+            const rows = liveBetsContainer.children;
+            for (let row of rows) {
+                const tag = row.querySelector('.status-tag');
+                if (tag && tag.textContent === 'Betting...') {
+                    tag.textContent = 'Lost';
+                    tag.className = 'status-tag text-red-500 font-bold text-[10px]';
+                }
+            }
+
+            // Append to History Bar dynamically
+            const histSpan = document.createElement('span');
+            const colorClass = crashPoint > 3 ? 'text-purple-400' : (crashPoint > 1.5 ? 'text-cyan-400' : 'text-amber-500');
+            histSpan.className = `text-xs bg-neutral-900 border border-neutral-800 ${colorClass} px-2 py-0.5 rounded font-bold font-mono shrink-0`;
+            histSpan.textContent = `${parseFloat(crashPoint).toFixed(2)}x`;
+            historyBar.insertBefore(histSpan, historyBar.children[1]);
+
+            setTimeout(() => {
+                multiplierDisplayEl.classList.remove('text-red-500');
+                multiplierDisplayEl.textContent = "1.00x";
+                statusMessageEl.textContent = "Waiting for next round...";
+                statusMessageEl.className = 'text-xs font-bold text-neutral-500 uppercase tracking-widest mt-2 z-10';
+                resetControls();
+            }, 3000); 
+        }
+
+        function resetControls() {
+            if(gameInterval) clearInterval(gameInterval);
+            isGameRunning = false;
+            currentBet = 0;
+            betBtn.classList.remove('hidden');
+            cashoutBtn.classList.add('hidden');
+            betInputEl.disabled = false;
+            planeEl.classList.add('hidden');
+        }
+
+        // Initial setup on page load
+        generateLobbyBets();
     </script>
 </body>
 </html>
