@@ -14,24 +14,41 @@
         .app-gradient { background: linear-gradient(135deg, #1f4068 0%, #162447 100%); }
         .gold-gradient { background: linear-gradient(90deg, #f39c12 0%, #f1c40f 100%); }
         .nav-active { color: #00fff0 !important; transform: scale(1.1); }
-        .fluxaa-logo {
+        
+        /* Fixed & Stabilized Header Logo Styling */
+        .fluxaa-container {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .fluxaa-logo-main {
             font-weight: 900;
+            font-size: 22px;
             letter-spacing: -1px;
             background: linear-gradient(to right, #00fff0, #0088ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(0, 255, 240, 0.2);
+            display: inline-block;
+        }
+        .fluxaa-logo-sub {
+            font-weight: 300;
+            font-size: 16px;
+            color: #ffffff;
+            opacity: 0.95;
+            letter-spacing: 0px;
+            margin-left: 2px;
+            display: inline-block;
         }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col no-scrollbar select-none overflow-x-hidden">
 
     <!-- ========================================== -->
-    <!-- APP HEADER BLOCK                           -->
+    <!-- APP HEADER BLOCK (FIXED LOGO BREAKDOWN)   -->
     <!-- ========================================== -->
     <header class="p-4 bg-[#11141a] border-b border-neutral-800/60 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-        <div class="flex items-center gap-1.5" onclick="triggerAdminSecret()">
-            <span class="fluxaa-logo text-xl tracking-tighter">Fluxaa<span class="text-white font-light text-base tracking-normal ml-0.5 opacity-90">Play</span></span>
+        <div class="fluxaa-container cursor-pointer" onclick="triggerAdminSecret()">
+            <span class="fluxaa-logo-main">Fluxaa</span><span class="fluxaa-logo-sub">Play</span>
         </div>
         
         <div onclick="switchPage('page-wallet', 'nav-wallet')" class="bg-[#1a1f29] border border-neutral-800/80 pl-2 pr-3 py-1 rounded-full flex items-center gap-2 cursor-pointer active:scale-95 transition-all">
@@ -43,7 +60,7 @@
     <!-- ========================================== -->
     <!-- PAGINATION 1: MAIN GAMES DASHBOARD         -->
     <!-- ========================================== -->
-    <div id="page-home" class="flex-1 flex flex-col pb-24">
+    <div id="page-home" class="flex-1 flex flex-col pb-44">
         <div class="p-4">
             <div class="app-gradient p-5 rounded-3xl shadow-xl border border-white/5 relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl"></div>
@@ -56,7 +73,6 @@
             </div>
         </div>
 
-        <!-- 🔴 FUTURE AD CODE SLOT HERE (HOMEPAGE BANNER) -->
         <div class="px-4 mb-2">
             <div class="w-full bg-[#141822] border border-dashed border-neutral-800 rounded-xl py-3 text-center text-[10px] text-neutral-500 font-bold uppercase tracking-widest">
                 [ Sponsored Ad Space Placeholder ]
@@ -106,7 +122,7 @@
     <!-- ========================================== -->
     <!-- PAGINATION 2: WALLET / REWARDS SYSTEM      -->
     <!-- ========================================== -->
-    <div id="page-wallet" class="flex-1 flex flex-col hidden p-4 pb-24 max-w-md w-full mx-auto">
+    <div id="page-wallet" class="flex-1 flex flex-col hidden p-4 pb-44 max-w-md w-full mx-auto">
         <h1 class="text-lg font-black tracking-wide text-neutral-200 mb-4 px-1">My Wallet Balance</h1>
 
         <div class="bg-[#141822] border border-neutral-800/80 rounded-3xl p-5 space-y-4 mb-4 shadow-xl">
@@ -125,7 +141,6 @@
             </div>
         </div>
 
-        <!-- 🔴 FUTURE AD CODE SLOT HERE (WALLET MIDDLE BANNER) -->
         <div class="mb-4">
             <div class="w-full bg-[#141822] border border-dashed border-neutral-800 rounded-xl py-3 text-center text-[10px] text-neutral-500 font-bold uppercase tracking-widest">
                 [ Interstitial Ad Unit Slot ]
@@ -205,7 +220,6 @@
             </div>
         </div>
 
-        <!-- 🔴 FUTURE AD CODE SLOT HERE (BOTTOM FOOTER BANNER IN GAME SCREEN) -->
         <div class="bg-[#0b0c10] text-center py-1">
             <div class="mx-4 my-1 py-1.5 border border-dashed border-neutral-800 text-[9px] text-neutral-600 font-bold uppercase tracking-widest rounded-lg">
                 [ In-Game Native Banner Ad Space ]
@@ -221,11 +235,20 @@
     <!-- ========================================== -->
     <!-- PAGINATION 3: ADMINISTRATIVE MANAGER STAGE -->
     <!-- ========================================== -->
-    <div id="page-admin" class="flex-1 flex flex-col hidden p-4 pb-24 max-w-xl w-full mx-auto">
+    <div id="page-admin" class="flex-1 flex flex-col hidden p-4 pb-44 max-w-xl w-full mx-auto">
         <h1 class="text-sm font-black tracking-widest text-red-400 mb-4 uppercase">🛠️ Core Administration Vault</h1>
         <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-3">Settle User Queue Requests</h3>
         <div id="admin-orders-container" class="space-y-3 flex-1 overflow-y-auto no-scrollbar"></div>
     </div>
+
+    <!-- ========================================== -->
+    <!-- BRAND COPYRIGHT FOOTER STAGE (NEW ADDITION)-->
+    <!-- ========================================== -->
+    <footer class="fixed bottom-[64px] left-0 right-0 bg-[#0b0c10] py-2 text-center border-t border-neutral-900 z-80">
+        <p class="text-[10px] text-neutral-500 font-medium tracking-wide">
+            &copy; 2026 <span class="text-neutral-400 font-bold">Fluxaa Technologies</span>. All rights reserved.
+        </p>
+    </footer>
 
     <!-- ========================================== -->
     <!-- CORE NAV BAR                               -->
@@ -368,7 +391,6 @@
         function startInteractiveEnginePlay(title) {
             isGameRunning = true;
             
-            // Clean inputs
             canvas.onmousedown = null; canvas.onmousemove = null; canvas.onmouseup = null;
             canvas.ontouchstart = null; canvas.ontouchmove = null; canvas.ontouchend = null;
             window.onkeydown = null;
@@ -405,9 +427,7 @@
             }
         }
 
-        // ========================================================
-        // GALAXY SHOOTER (DRAG & AUTO-FIRE ENGINE)
-        // ========================================================
+        // GALAXY SHOOTER ENGINE
         let player, lasers, aliens, shooterScore, lastAutoFireTime;
         function initGalaxyShooterTouch() {
             player = { x: canvas.width / 2 - 20, y: canvas.height - 50, width: 42, height: 22 };
@@ -477,9 +497,7 @@
             animationFrameId = requestAnimationFrame(runGalaxyShooterCycle);
         }
 
-        // ========================================================
-        // FLAPPY BIRD PRO (TAP ANYWHERE)
-        // ========================================================
+        // FLAPPY BIRD PRO
         let bird, pipes, birdScore;
         function initFlappyBirdGame() {
             bird = { x: 50, y: 150, velocity: 0, gravity: 0.38, jump: -6.2, radius: 11 };
@@ -527,9 +545,7 @@
             animationFrameId = requestAnimationFrame(runFlappyBirdLoop);
         }
 
-        // ========================================================
-        // RETRO SNAKE (🔥 UPGRADED TO FINGER SCROLL / SWIPE LOGIC)
-        // ========================================================
+        // SNAKE ENGINE
         let snake, snakeFood, snakeDx, snakeDy, snakeScore, gridSquareSize;
         let touchStartX = 0, touchStartY = 0;
 
@@ -539,7 +555,6 @@
             snakeDx = gridSquareSize; snakeDy = 0; snakeScore = 0;
             generateNewSnakeFoodMatrix();
             
-            // Keyboard controls fallback
             window.onkeydown = (e) => {
                 if(e.key === "ArrowUp" && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; }
                 if(e.key === "ArrowDown" && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; }
@@ -547,7 +562,6 @@
                 if(e.key === "ArrowRight" && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
             };
 
-            // Swipe / Scroll Tracker Logic
             canvas.ontouchstart = (e) => {
                 if (e.touches.length > 0) {
                     touchStartX = e.touches[0].clientX;
@@ -557,7 +571,7 @@
 
             canvas.ontouchmove = (e) => {
                 if (!isGameRunning || e.touches.length === 0) return;
-                e.preventDefault(); // Prevents layout web-scroll bouncing
+                e.preventDefault();
             };
 
             canvas.ontouchend = (e) => {
@@ -566,28 +580,20 @@
                 let diffX = e.changedTouches[0].clientX - touchStartX;
                 let diffY = e.changedTouches[0].clientY - touchStartY;
                 
-                // Set threshold so small accidental taps don't trigger a turn
                 if (Math.abs(diffX) > 25 || Math.abs(diffY) > 25) {
                     if (Math.abs(diffX) > Math.abs(diffY)) {
-                        // Horizontal Swipe Vector
-                        if (diffX > 0 && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; } // Right
-                        else if (diffX < 0 && snakeDx === 0) { snakeDx = -gridSquareSize; snakeDy = 0; } // Left
+                        if (diffX > 0 && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
+                        else if (diffX < 0 && snakeDx === 0) { snakeDx = -gridSquareSize; snakeDy = 0; }
                     } else {
-                        // Vertical Swipe Vector
-                        if (diffY > 0 && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; } // Down
-                        else if (diffY < 0 && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; } // Up
+                        if (diffY > 0 && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; }
+                        else if (diffY < 0 && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; }
                     }
                 }
             };
 
-            // Mouse simulation swipe fallback for browser testing
-            canvas.onmousedown = (e) => {
-                touchStartX = e.clientX;
-                touchStartY = e.clientY;
-            };
+            canvas.onmousedown = (e) => { touchStartX = e.clientX; touchStartY = e.clientY; };
             canvas.onmouseup = (e) => {
-                let diffX = e.clientX - touchStartX;
-                let diffY = e.clientY - touchStartY;
+                let diffX = e.clientX - touchStartX; let diffY = e.clientY - touchStartY;
                 if (Math.abs(diffX) > 25 || Math.abs(diffY) > 25) {
                     if (Math.abs(diffX) > Math.abs(diffY)) {
                         if (diffX > 0 && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
@@ -634,9 +640,7 @@
             });
         }
 
-        // ========================================================
         // CASH INFRASTRUCTURE OPERATIONS
-        // ========================================================
         let withdrawWorkflowStep = 1; let tempCoinsToDeduct = 0;
         function openWithdrawModal() {
             withdrawWorkflowStep = 1; tempCoinsToDeduct = 0;
