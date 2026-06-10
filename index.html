@@ -2,725 +2,582 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fluxaa Play App</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxaa Study Rewards</title>
+    <!-- Tailwind CSS Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Premium Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <!-- ChartJS for Premium Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0b0c10; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        canvas { background: #13151a; display: block; max-width: 100%; max-height: 80%; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .app-gradient { background: linear-gradient(135deg, #1f4068 0%, #162447 100%); }
-        .gold-gradient { background: linear-gradient(90deg, #f39c12 0%, #f1c40f 100%); }
-        .nav-active { color: #00fff0 !important; transform: scale(1.1); }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(140% 140% at 50% 0%, #070514 0%, #030208 50%, #000000 100%);
+            color: #F3F4F6;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glow-cyan { box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.15); }
+        .glow-purple { box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.2); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Fixed & Stabilized Header Logo Styling */
-        .fluxaa-container {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-        .fluxaa-logo-main {
-            font-weight: 900;
-            font-size: 22px;
-            letter-spacing: -1px;
-            background: linear-gradient(to right, #00fff0, #0088ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-        }
-        .fluxaa-logo-sub {
-            font-weight: 300;
-            font-size: 16px;
-            color: #ffffff;
-            opacity: 0.95;
-            letter-spacing: 0px;
-            margin-left: 2px;
-            display: inline-block;
+        /* Smooth micro-interactions */
+        .nav-btn-active {
+            color: #06B6D4;
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.15);
         }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col no-scrollbar select-none overflow-x-hidden">
+<body class="min-h-screen flex flex-col justify-between max-w-md mx-auto shadow-2xl relative border-x border-white/5 pb-24 selection:bg-cyan-500/30">
 
-    <!-- ========================================== -->
-    <!-- APP HEADER BLOCK (FIXED LOGO BREAKDOWN)   -->
-    <!-- ========================================== -->
-    <header class="p-4 bg-[#11141a] border-b border-neutral-800/60 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-        <div class="fluxaa-container cursor-pointer" onclick="triggerAdminSecret()">
-            <span class="fluxaa-logo-main">Fluxaa</span><span class="fluxaa-logo-sub">Play</span>
+    <!-- ================= NOTIFICATION BANNER ENGINE ================= -->
+    <div id="notificationToast" class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-panel z-50 p-3.5 rounded-2xl flex items-center gap-3 border-l-4 border-cyan-400 translate-y-[-150%] transition-transform duration-500 shadow-xl shadow-black/50">
+        <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center text-base">⚡</div>
+        <div class="flex-1">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wide">Fluxaa AI Core</h4>
+            <p class="text-[11px] text-slate-300 mt-0.5" id="notificationText">Your study journey starts now.</p>
+        </div>
+        <button onclick="dismissNotification()" class="text-slate-500 hover:text-white text-xs font-bold">×</button>
+    </div>
+
+    <!-- ================= AUTH LAYER (GOOGLE SIGN-IN ONLY) ================= -->
+    <div id="authContainer" class="flex-1 flex flex-col justify-center px-6 py-8 relative z-50">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 mb-4 shadow-2xl shadow-cyan-500/20">
+                <span class="text-2xl font-black text-white tracking-widest">FX</span>
+            </div>
+            <h1 class="text-3xl font-black tracking-tight text-white">Fluxaa Study</h1>
+            <p class="text-xs text-slate-400 mt-1">Gamified Focus & Habit Architecture</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-3xl space-y-6 glow-purple">
+            <div class="space-y-2">
+                <h2 class="text-lg font-bold text-white text-center">Deploy Focus Protocol</h2>
+                <p class="text-xs text-slate-400 text-center px-4 leading-relaxed">Join thousands of high-performers tracking streaks, mastering objectives, and converting intellectual energy into rewards.</p>
+            </div>
+            
+            <div class="border-t border-white/5 pt-4">
+                <!-- Premium Simulating Google Sign In Button -->
+                <button onclick="triggerGoogleLoginSimulation()" class="w-full bg-white text-black hover:bg-slate-100 font-bold text-xs uppercase tracking-wider py-4 px-4 rounded-xl flex items-center justify-center gap-3 transition-all active:scale-[0.99] shadow-lg shadow-white/5">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.553 0-6.433-2.88-6.433-6.433s2.88-6.433 6.433-6.433c1.633 0 3.125.614 4.27 1.62l3.053-3.052C19.227 2.194 15.933 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.898 0 11.24-4.242 11.24-11.24 0-.768-.078-1.516-.217-2.24H12.24z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+            </div>
         </div>
         
-        <div onclick="switchPage('page-wallet', 'nav-wallet')" class="bg-[#1a1f29] border border-neutral-800/80 pl-2 pr-3 py-1 rounded-full flex items-center gap-2 cursor-pointer active:scale-95 transition-all">
-            <div class="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center text-[11px] font-black text-neutral-950">₹</div>
-            <span id="home-balance" class="font-mono font-bold text-xs text-amber-400">0</span>
-        </div>
-    </header>
-
-    <!-- ========================================== -->
-    <!-- PAGINATION 1: MAIN GAMES DASHBOARD         -->
-    <!-- ========================================== -->
-    <div id="page-home" class="flex-1 flex flex-col pb-44">
-        <div class="p-4">
-            <div class="app-gradient p-5 rounded-3xl shadow-xl border border-white/5 relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl"></div>
-                <h2 class="text-xs font-semibold text-cyan-300 uppercase tracking-widest">Available Entry Tokens</h2>
-                <p id="home-tickets-count" class="text-3xl font-black text-white mt-1">5 Tickets</p>
-                <div class="mt-4 flex justify-between items-center bg-black/20 p-2.5 rounded-xl border border-white/5">
-                    <span class="text-[11px] text-neutral-300 font-medium">Daily Limit Rule Installed</span>
-                    <span class="text-[11px] font-bold text-amber-400">100 Coins = ₹1</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="px-4 mb-2">
-            <div class="w-full bg-[#141822] border border-dashed border-neutral-800 rounded-xl py-3 text-center text-[10px] text-neutral-500 font-bold uppercase tracking-widest">
-                [ Sponsored Ad Space Placeholder ]
-            </div>
-        </div>
-
-        <main class="flex-1 p-4 pt-1">
-            <h3 class="text-xs font-black uppercase text-neutral-400 tracking-wider mb-3 px-1">Select & Play Arcade</h3>
-            
-            <div class="space-y-4">
-                <!-- Game Card 1 -->
-                <div onclick="launchGame('Galaxy Shooter', '🚀')" class="bg-[#141822] border border-neutral-800 rounded-2xl p-3 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all">
-                    <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl flex items-center justify-center text-4xl shadow-md">🚀</div>
-                    <div class="flex-1">
-                        <h4 class="text-sm font-bold text-neutral-100">Galaxy Shooter</h4>
-                        <p class="text-[11px] text-neutral-400 mt-0.5">Drag left/right anywhere to fly.</p>
-                        <span class="inline-block bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-md mt-2">Win upto 50 Coins</span>
-                    </div>
-                    <button class="bg-cyan-500 text-neutral-950 font-black text-xs px-4 py-2 rounded-xl shadow-md shadow-cyan-500/10">PLAY</button>
-                </div>
-
-                <!-- Game Card 2 -->
-                <div onclick="launchGame('Flappy Bird', '🐦')" class="bg-[#141822] border border-neutral-800 rounded-2xl p-3 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all">
-                    <div class="w-20 h-20 bg-gradient-to-br from-cyan-600 to-blue-700 rounded-xl flex items-center justify-center text-4xl shadow-md">🐦</div>
-                    <div class="flex-1">
-                        <h4 class="text-sm font-bold text-neutral-100">Flappy Bird Pro</h4>
-                        <p class="text-[11px] text-neutral-400 mt-0.5">Tap anywhere to jump higher.</p>
-                        <span class="inline-block bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-md mt-2">Win upto 50 Coins</span>
-                    </div>
-                    <button class="bg-cyan-500 text-neutral-950 font-black text-xs px-4 py-2 rounded-xl shadow-md shadow-cyan-500/10">PLAY</button>
-                </div>
-
-                <!-- Game Card 3 -->
-                <div onclick="launchGame('Snake Game', '🐍')" class="bg-[#141822] border border-neutral-800 rounded-2xl p-3 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all">
-                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center text-4xl shadow-md">🐍</div>
-                    <div class="flex-1">
-                        <h4 class="text-sm font-bold text-neutral-100">Retro Snake</h4>
-                        <p class="text-[11px] text-neutral-400 mt-0.5">Scroll / Swipe finger to steer.</p>
-                        <span class="inline-block bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-md mt-2">Win upto 50 Coins</span>
-                    </div>
-                    <button class="bg-cyan-500 text-neutral-950 font-black text-xs px-4 py-2 rounded-xl shadow-md shadow-cyan-500/10">PLAY</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- PAGINATION 2: WALLET / REWARDS SYSTEM      -->
-    <!-- ========================================== -->
-    <div id="page-wallet" class="flex-1 flex flex-col hidden p-4 pb-44 max-w-md w-full mx-auto">
-        <h1 class="text-lg font-black tracking-wide text-neutral-200 mb-4 px-1">My Wallet Balance</h1>
-
-        <div class="bg-[#141822] border border-neutral-800/80 rounded-3xl p-5 space-y-4 mb-4 shadow-xl">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Fluxaa Balance</p>
-                    <h2 id="wallet-coins" class="text-3xl font-black text-amber-400 mt-0.5 font-mono">0</h2>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Equivalent Cash</p>
-                    <h2 id="wallet-rupees" class="text-2xl font-black text-emerald-400 mt-0.5 font-mono">₹0.00</h2>
-                </div>
-            </div>
-            <div class="border-t border-neutral-800/60 pt-3 text-[11px] text-neutral-400">
-                ⚠️ Minimum Redeem Threshold: <b class="text-neutral-200 font-mono">500 Coins (₹5)</b>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <div class="w-full bg-[#141822] border border-dashed border-neutral-800 rounded-xl py-3 text-center text-[10px] text-neutral-500 font-bold uppercase tracking-widest">
-                [ Interstitial Ad Unit Slot ]
-            </div>
-        </div>
-
-        <div class="bg-[#141822] border border-neutral-800 rounded-2xl p-4 space-y-3.5 mb-4 shadow-md">
-            <div class="flex justify-between items-center text-xs">
-                <div>
-                    <p class="text-neutral-200 font-bold">Daily Free Tokens</p>
-                    <p id="ticket-claim-status" class="text-emerald-400 font-medium text-[11px] mt-0.5">5 / 5 Available</p>
-                </div>
-                <button onclick="claimDailyFiveTickets()" id="btn-claim-daily" class="bg-neutral-800 text-neutral-200 font-bold px-3 py-2 rounded-xl text-[10px] uppercase border border-neutral-700/60">Claim Free</button>
-            </div>
-            <div class="border-t border-neutral-800/60 pt-3 flex justify-between items-center text-xs">
-                <div>
-                    <p class="text-neutral-200 font-bold">Extra Bonus Tokens</p>
-                    <p id="ticket-extra-status" class="text-cyan-400 font-medium text-[11px] mt-0.5">0 / 5 Spent</p>
-                </div>
-                <button onclick="claimSingleExtraTicket()" id="btn-claim-extra" class="bg-neutral-800 text-neutral-200 font-bold px-3 py-2 rounded-xl text-[10px] uppercase border border-neutral-700/60">+1 Ticket</button>
-            </div>
-        </div>
-
-        <button onclick="openWithdrawModal()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black py-3.5 rounded-2xl text-xs uppercase tracking-wider shadow-lg shadow-blue-500/20 mb-6 cursor-pointer active:scale-95 transition-all">Redeem Via UPI String</button>
-
-        <h3 class="text-xs font-black text-neutral-400 uppercase tracking-wider mb-2.5 px-1">Withdrawal Ledger Logs</h3>
-        <div id="history-container" class="space-y-2 flex-1 overflow-y-auto max-h-48 no-scrollbar">
-            <p class="text-neutral-600 text-xs text-center py-4">No logged items synced.</p>
+        <div class="mt-8 text-center text-[10px] text-slate-600 font-mono tracking-wider">
+            SECURE ACCESS GATEWAY // OAUTH_2.0
         </div>
     </div>
 
-    <!-- WITHDRAW MODAL -->
-    <div id="modal-withdraw" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[150] hidden flex items-center justify-center p-4">
-        <div class="bg-[#141822] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl">
-            <h3 class="text-sm font-black uppercase tracking-wide text-neutral-200">Initiate Instant Payout</h3>
-            <div class="space-y-3">
-                <div>
-                    <label class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Coins Amount</label>
-                    <input type="number" id="input-coins" placeholder="Min 500" class="w-full bg-[#0b0c10] border border-neutral-800 rounded-xl p-3 mt-1 font-mono text-sm focus:outline-none focus:border-cyan-500 text-white">
-                </div>
-                <div id="upi-fields" class="space-y-3 hidden">
+    <!-- ================= MAIN DASHBOARD SHELL CONTAINER ================= -->
+    <div id="mainAppStructure" class="flex-1 flex flex-col hidden overflow-y-auto hide-scrollbar">
+        
+        <!-- Premium Fixed Profile Status Bar -->
+        <div class="px-4 pt-4 pb-3 sticky top-0 bg-[#030208]/80 backdrop-blur-xl z-40 border-b border-white/[0.02]">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img id="userAvatar" src="" alt="Avatar" class="w-10 h-10 rounded-xl border border-white/10 shadow-md">
                     <div>
-                        <label class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">UPI Handle Address</label>
-                        <input type="text" id="input-upi" placeholder="example@upi" class="w-full bg-[#0b0c10] border border-neutral-800 rounded-xl p-3 mt-1 text-sm focus:outline-none focus:border-cyan-500 text-white">
+                        <span class="text-[9px] text-slate-500 block font-bold uppercase tracking-widest mb-0.5" id="userGreeting">WELCOME BACK</span>
+                        <h3 class="text-sm font-extrabold text-white" id="userName">Varun Goyal</h3>
                     </div>
-                    <div>
-                        <label class="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">Mobile Register Key</label>
-                        <input type="tel" id="input-mobile" placeholder="10 Digit Number" class="w-full bg-[#0b0c10] border border-neutral-800 rounded-xl p-3 mt-1 text-sm focus:outline-none focus:border-cyan-500 text-white">
+                </div>
+                <div class="bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2 flex items-center gap-2">
+                    <span class="text-xl">🔥</span>
+                    <div class="text-left">
+                        <span class="text-[8px] text-slate-500 font-bold block uppercase tracking-wide leading-none">STREAK</span>
+                        <span class="text-xs font-black font-mono text-amber-400" id="topStreakCounter">7 Days</span>
                     </div>
                 </div>
             </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeWithdrawModal()" class="w-1/2 bg-neutral-800 text-neutral-400 font-bold text-xs py-3 rounded-xl">Cancel</button>
-                <button onclick="processWithdrawFormSubmit()" id="btn-modal-action" class="w-1/2 bg-cyan-500 text-neutral-950 font-black text-xs py-3 rounded-xl uppercase">Next</button>
-            </div>
+        </div>
+
+        <!-- APP CONTENT VIEWPORTS LAYER -->
+        <div id="appViewport" class="px-4 py-4 space-y-5 flex-1">
+            <!-- Programmatic screen fragments render here -->
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- GAMEPLAY HUD STAGE AREA                    -->
-    <!-- ========================================== -->
-    <div id="page-game" class="fixed inset-0 bg-[#0b0c10] z-[100] hidden flex flex-col">
-        <header class="p-4 bg-[#11141a] border-b border-neutral-800/80 flex justify-between items-center shadow-md">
-            <h2 id="runtime-game-title" class="text-xs font-black uppercase tracking-widest text-cyan-400">Match Studio</h2>
-            <div class="font-mono text-xs font-semibold bg-black/30 px-3 py-1 rounded-full border border-neutral-800">
-                Coins: <span id="runtime-live-coins" class="text-amber-400 font-bold">0</span> <span class="text-neutral-500 text-[9px]">(Max 50)</span>
-            </div>
-        </header>
-
-        <div class="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            <canvas id="gameCanvas" width="340" height="420"></canvas>
-            
-            <div id="game-start-overlay" class="absolute inset-0 bg-[#0b0c10]/90 flex flex-col items-center justify-center p-6 text-center z-10">
-                <div id="runtime-game-avatar" class="text-7xl mb-4 p-4 bg-neutral-900 rounded-full shadow-inner">🎮</div>
-                <p id="runtime-desc" class="text-xs text-neutral-400 max-w-xs mb-8 leading-relaxed">Play actively to accumulate balance points.</p>
-                <button id="btn-game-start" class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black px-10 py-3.5 rounded-full uppercase text-xs tracking-widest shadow-lg shadow-cyan-500/20 active:scale-95 transition-all">Launch Match</button>
-            </div>
-        </div>
-
-        <div class="bg-[#0b0c10] text-center py-1">
-            <div class="mx-4 my-1 py-1.5 border border-dashed border-neutral-800 text-[9px] text-neutral-600 font-bold uppercase tracking-widest rounded-lg">
-                [ In-Game Native Banner Ad Space ]
-            </div>
-        </div>
-
-        <div class="p-4 border-t border-neutral-900 bg-[#11141a] flex justify-between items-center px-6 shadow-2xl">
-            <span class="text-[10px] text-neutral-500 uppercase font-bold tracking-wider">Engine Security V3.5</span>
-            <button onclick="exitGameSessionEarly()" class="text-neutral-400 hover:text-red-400 text-xs font-black uppercase tracking-wider transition-all">✕ Quit Match</button>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- PAGINATION 3: ADMINISTRATIVE MANAGER STAGE -->
-    <!-- ========================================== -->
-    <div id="page-admin" class="flex-1 flex flex-col hidden p-4 pb-44 max-w-xl w-full mx-auto">
-        <h1 class="text-sm font-black tracking-widest text-red-400 mb-4 uppercase">🛠️ Core Administration Vault</h1>
-        <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-3">Settle User Queue Requests</h3>
-        <div id="admin-orders-container" class="space-y-3 flex-1 overflow-y-auto no-scrollbar"></div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- BRAND COPYRIGHT FOOTER STAGE (NEW ADDITION)-->
-    <!-- ========================================== -->
-    <footer class="fixed bottom-[64px] left-0 right-0 bg-[#0b0c10] py-2 text-center border-t border-neutral-900 z-80">
-        <p class="text-[10px] text-neutral-500 font-medium tracking-wide">
-            &copy; 2026 <span class="text-neutral-400 font-bold">Fluxaa Technologies</span>. All rights reserved.
-        </p>
-    </footer>
-
-    <!-- ========================================== -->
-    <!-- CORE NAV BAR                               -->
-    <!-- ========================================== -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#11141a] border-t border-neutral-800/80 p-3 flex justify-around items-center z-[90] shadow-2xl rounded-t-3xl">
-        <button id="nav-home" onclick="switchPage('page-home', 'nav-home')" class="flex flex-col items-center gap-1 text-neutral-400 font-bold text-xs nav-active transition-all">
-            <span class="text-lg">🎮</span>
-            <span>Arcade</span>
+    <!-- ================= HIGH-FIDELITY APP NAVIGATION BAR ================= -->
+    <nav id="bottomAppBar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/60 backdrop-blur-2xl border-t border-white/5 px-4 py-3 flex items-center justify-between z-50 hidden">
+        <button onclick="switchSystemView('home', this)" class="nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all rounded-xl nav-btn-active">
+            <span class="text-base">🏠</span>
+            <span class="text-[9px] tracking-wider uppercase font-bold">Home</span>
         </button>
-        <button id="nav-wallet" onclick="switchPage('page-wallet', 'nav-wallet')" class="flex flex-col items-center gap-1 text-neutral-400 font-bold text-xs transition-all">
-            <span class="text-lg">👛</span>
-            <span>Wallet</span>
+        <button onclick="switchSystemView('tasks', this)" class="nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all text-slate-500 font-medium">
+            <span class="text-base">🎯</span>
+            <span class="text-[9px] tracking-wider uppercase font-bold">Quests</span>
+        </button>
+        <button onclick="switchSystemView('leaderboard', this)" class="nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all text-slate-500 font-medium">
+            <span class="text-base">🏆</span>
+            <span class="text-[9px] tracking-wider uppercase font-bold">Ranks</span>
+        </button>
+        <button onclick="switchSystemView('rewards', this)" class="nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all text-slate-500 font-medium">
+            <span class="text-base">🎁</span>
+            <span class="text-[9px] tracking-wider uppercase font-bold">Rewards</span>
+        </button>
+        <button onclick="switchSystemView('profile', this)" class="nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all text-slate-500 font-medium">
+            <span class="text-base">👤</span>
+            <span class="text-[9px] tracking-wider uppercase font-bold">Profile</span>
         </button>
     </nav>
 
-    <!-- ========================================== -->
-    <!-- NATIVE CORE LOGIC OPERATIONS HUB          -->
-    <!-- ========================================== -->
+    <!-- ================= ENGINE WORKSPACE JAVA SCRIPT ================= -->
     <script>
-        const KEY_COINS = "fluxaa_sys_coins";
-        const KEY_TICKETS = "fluxaa_sys_tickets";
-        const KEY_DAILY_CLAIM = "fluxaa_sys_daily_status";
-        const KEY_EXTRA_COUNT = "fluxaa_sys_extra_status";
-        const KEY_ORDERS = "fluxaa_sys_orders";
-        const MASTER_PASS = "Goyal0@Varun";
+        // Core Reactive Application State
+        let appData = {
+            activeView: 'home',
+            user: null,
+            points: 2450,
+            streak: 7,
+            hoursTracked: 42,
+            tasksDone: 14,
+            rank: 12,
+            claimedTasks: [],
+            dailyStudyLog: { goal: 4, tracked: 2.5, loggedToday: false },
+            motivationalQuotes: [
+                "Consistency beats talent when talent doesn't work consistently.",
+                "Your focus determines your reality. Lock in the parameters.",
+                "Small efforts daily stack up into massive intellectual assets.",
+                "The leaderboard shifts when you decide to outwork your yesterday."
+            ],
+            notificationsPool: [
+                "Good Morning! Your study journey starts now.",
+                "Don't break your streak today.",
+                "Complete today's goal and earn bonus points.",
+                "You are climbing the leaderboard. Keep going!",
+                "Only one task left to complete today's challenge."
+            ],
+            tasks: [
+                { id: 'd1', category: 'daily', title: 'Complete 2h Deep Focus Block', desc: 'Engage in absolute zero-distraction focus time.', score: 50, difficulty: 'Medium', max: 1, current: 0 },
+                { id: 'd2', category: 'daily', title: 'Review Active Recall Notes', desc: 'Test yourself on weekly target topics.', score: 30, difficulty: 'Easy', max: 1, current: 1 },
+                { id: 'w1', category: 'weekly', title: 'Log 25 Study Hours Total', desc: 'Maintain structured consistency over 7 days.', score: 250, difficulty: 'Hard', max: 25, current: 18 },
+                { id: 'm1', category: 'monthly', title: 'Perfect 14-Day Streak Run', desc: 'Do not allow the streak engine to drop flags.', score: 600, difficulty: 'Expert', max: 14, current: 7 },
+                { id: 's1', category: 'special', title: 'Fluxaa Global Sprint Event', desc: 'Solve math/logic equations array under pressure.', score: 150, difficulty: 'Timed', max: 1, current: 0 }
+            ],
+            leaderboard: [
+                { name: "Aman Sharma", points: 3840, rank: 1, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Aman" },
+                { name: "Preeti Das", points: 3100, rank: 2, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Preeti" },
+                { name: "Rahul Gohain", points: 2950, rank: 3, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Rahul" },
+                { name: "Varun Goyal (You)", points: 2450, rank: 12, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Varun" },
+                { name: "Nitin Kumar", points: 2200, rank: 13, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Nitin" },
+                { name: "Divya Verma", points: 1950, rank: 14, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Divya" }
+            ],
+            rewardsHistory: [
+                { title: "Weekly Pro Node Pass", type: "Claimed", cost: "1200 Pts" },
+                { title: "Streak Protector Token", type: "System Asset", cost: "500 Pts" }
+            ]
+        };
 
-        let walletCoins = parseInt(localStorage.getItem(KEY_COINS)) || 0;
-        let tickets = parseInt(localStorage.getItem(KEY_TICKETS)) || 5;
-        let dailyClaimedStatus = localStorage.getItem(KEY_DAILY_CLAIM) === "true"; 
-        let extraTicketsSpent = parseInt(localStorage.getItem(KEY_EXTRA_COUNT)) || 0; 
-        let ordersList = JSON.parse(localStorage.getItem(KEY_ORDERS)) || [];
-
-        let secretClickCounter = 0;
-        let currentGameName = "";
-        let liveEarnedCoins = 0;
-        let isGameRunning = false;
-        let animationFrameId = null;
-        let gameLoopIntervalId = null;
-
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        function switchPage(pageId, navId) {
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-wallet').classList.add('hidden');
-            document.getElementById('page-admin').classList.add('hidden');
-            document.getElementById(pageId).classList.remove('hidden');
-            
-            document.getElementById('nav-home').classList.remove('nav-active');
-            document.getElementById('nav-wallet').classList.remove('nav-active');
-            if(navId) document.getElementById(navId).classList.add('nav-active');
-
-            syncUIRefresh();
-        }
-
-        function syncUIRefresh() {
-            document.getElementById('home-balance').textContent = walletCoins;
-            document.getElementById('home-tickets-count').textContent = `${tickets} Tickets`;
-            document.getElementById('wallet-coins').textContent = walletCoins;
-            document.getElementById('wallet-rupees').textContent = `₹${(walletCoins / 100).toFixed(2)}`;
-            
-            document.getElementById('ticket-claim-status').textContent = dailyClaimedStatus ? "Claimed Today (0 Available)" : "5 Tickets Ready To Claim";
-            document.getElementById('btn-claim-daily').disabled = dailyClaimedStatus;
-            document.getElementById('btn-claim-daily').style.opacity = dailyClaimedStatus ? "0.4" : "1";
-
-            document.getElementById('ticket-extra-status').textContent = `${5 - extraTicketsSpent} / 5 Extra Left`;
-            document.getElementById('btn-claim-extra').disabled = extraTicketsSpent >= 5;
-            document.getElementById('btn-claim-extra').style.opacity = (extraTicketsSpent >= 5) ? "0.4" : "1";
-
-            renderUserHistory();
-            renderAdminDashboardOrders();
-        }
-
-        function claimDailyFiveTickets() {
-            if(dailyClaimedStatus) return;
-            alert("📺 Ad Simulation: Loading Ad Frames...");
-            setTimeout(() => {
-                tickets += 5;
-                dailyClaimedStatus = true;
-                localStorage.setItem(KEY_TICKETS, tickets);
-                localStorage.setItem(KEY_DAILY_CLAIM, "true");
-                alert("✨ Verified! +5 Entry Tokens stacked.");
-                syncUIRefresh();
-            }, 1200);
-        }
-
-        function claimSingleExtraTicket() {
-            if(extraTicketsSpent >= 5) return;
-            alert("📺 Ad Simulation: Loading Video Reward Track...");
-            setTimeout(() => {
-                tickets += 1;
-                extraTicketsSpent += 1;
-                localStorage.setItem(KEY_TICKETS, tickets);
-                localStorage.setItem(KEY_EXTRA_COUNT, extraTicketsSpent);
-                alert("✨ Verified! +1 Token unlocked.");
-                syncUIRefresh();
-            }, 1200);
-        }
-
-        function launchGame(title, avatar) {
-            if (tickets <= 0) {
-                alert("🚨 No entry tokens left! Load tokens inside wallet tab.");
-                return;
+        // Simulated Auto-Notification Core Loop
+        setInterval(() => {
+            if(appData.user) {
+                const randomMsg = appData.notificationsPool[Math.floor(Math.random() * appData.notificationsPool.length)];
+                triggerNotificationDisplay(randomMsg);
             }
-            tickets--;
-            localStorage.setItem(KEY_TICKETS, tickets);
+        }, 35000);
 
-            currentGameName = title;
-            liveEarnedCoins = 0;
-            isGameRunning = false;
-            
-            document.getElementById('runtime-game-title').textContent = title;
-            document.getElementById('runtime-game-avatar').textContent = avatar;
-            document.getElementById('runtime-live-coins').textContent = "0";
-
-            if(title === "Galaxy Shooter") {
-                document.getElementById('runtime-desc').textContent = "Drag your finger anywhere left/right on screen to steer. Spacecraft fires lasers automatically! Hit = 5 Coins.";
-            } else if(title === "Flappy Bird") {
-                document.getElementById('runtime-desc').textContent = "Tap anywhere inside screen or press Spacebar to flap wings. Clear Pipe = 2 Coins.";
-            } else if(title === "Snake Game") {
-                document.getElementById('runtime-desc').textContent = "Swipe/Scroll finger anywhere on the screen (Up, Down, Left, Right) to change direction. Food = 5 Coins.";
-            }
-
-            document.getElementById('game-start-overlay').classList.remove('hidden');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            document.getElementById('page-game').classList.remove('hidden');
-
-            document.getElementById('btn-game-start').onclick = function() {
-                document.getElementById('game-start-overlay').classList.add('hidden');
-                startInteractiveEnginePlay(title);
-            };
+        function triggerNotificationDisplay(msg) {
+            const toast = document.getElementById('notificationToast');
+            document.getElementById('notificationText').innerText = msg;
+            toast.style.transform = "translateY(0) translateX(-50%)";
+            setTimeout(dismissNotification, 6000);
         }
 
-        function updateLiveCoinsDisplay(amount) {
-            liveEarnedCoins = amount;
-            if (liveEarnedCoins > 50) liveEarnedCoins = 50; 
-            document.getElementById('runtime-live-coins').textContent = liveEarnedCoins;
+        function dismissNotification() {
+            document.getElementById('notificationToast').style.transform = "translateY(-150%) translateX(-50%)";
         }
 
-        function startInteractiveEnginePlay(title) {
-            isGameRunning = true;
-            
-            canvas.onmousedown = null; canvas.onmousemove = null; canvas.onmouseup = null;
-            canvas.ontouchstart = null; canvas.ontouchmove = null; canvas.ontouchend = null;
-            window.onkeydown = null;
-
-            if(title === "Galaxy Shooter") {
-                initGalaxyShooterTouch();
-            } else if(title === "Flappy Bird") {
-                initFlappyBirdGame();
-            } else if(title === "Snake Game") {
-                initSnakeSwipeEngine();
-            }
-        }
-
-        function endInteractiveGameSession() {
-            isGameRunning = false;
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            if (gameLoopIntervalId) clearInterval(gameLoopIntervalId);
-            
-            let finalRewardPayload = Math.min(liveEarnedCoins, 50);
-            walletCoins += finalRewardPayload;
-            localStorage.setItem(KEY_COINS, walletCoins);
-
-            alert(`💥 Match Ended!\n\nAdded: +${finalRewardPayload} Fluxaa Coins.`);
-            
-            setTimeout(() => {
-                document.getElementById('page-game').classList.add('hidden');
-                switchPage('page-home', 'nav-home');
-            }, 300);
-        }
-
-        function exitGameSessionEarly() {
-            if(confirm("Terminate match early? Earned coins safe below cap guidelines.")) {
-                endInteractiveGameSession();
-            }
-        }
-
-        // GALAXY SHOOTER ENGINE
-        let player, lasers, aliens, shooterScore, lastAutoFireTime;
-        function initGalaxyShooterTouch() {
-            player = { x: canvas.width / 2 - 20, y: canvas.height - 50, width: 42, height: 22 };
-            lasers = []; aliens = []; shooterScore = 0; lastAutoFireTime = 0;
-
-            window.onkeydown = (e) => {
-                if(e.key === "ArrowLeft") player.x = Math.max(0, player.x - 20);
-                if(e.key === "ArrowRight") player.x = Math.min(canvas.width - player.width, player.x + 20);
+        // Google Authentication Engine Simulation Flow
+        function triggerGoogleLoginSimulation() {
+            // High-fidelity mocking parameters
+            appData.user = {
+                name: "Varun Goyal",
+                email: "varun.goyal7910@gmail.com",
+                photo: "https://api.dicebear.com/7.x/bottts/svg?seed=Varun"
             };
 
-            let trackDrag = (clientX) => {
-                let rect = canvas.getBoundingClientRect();
-                let scaleX = canvas.width / rect.width;
-                let canvasX = (clientX - rect.left) * scaleX;
-                player.x = canvasX - player.width / 2;
-                if(player.x < 0) player.x = 0;
-                if(player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-            };
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('mainAppStructure').classList.remove('hidden');
+            document.getElementById('bottomAppBar').classList.remove('hidden');
 
-            canvas.onmousemove = (e) => { if(isGameRunning) trackDrag(e.clientX); };
-            canvas.ontouchmove = (e) => { if(isGameRunning && e.touches.length > 0) trackDrag(e.touches[0].clientX); };
+            // Sync User Meta Properties
+            document.getElementById('userName').innerText = appData.user.name;
+            document.getElementById('userAvatar').src = appData.user.photo;
+            document.getElementById('topStreakCounter').innerText = `${appData.streak} Days`;
 
-            runGalaxyShooterCycle();
+            triggerNotificationDisplay("Google Session Auth Success. Welcome to Fluxaa!");
+            renderActiveViewEngine();
         }
 
-        function runGalaxyShooterCycle() {
-            if(!isGameRunning) return;
-
-            let now = Date.now();
-            if(now - lastAutoFireTime > 220) {
-                lasers.push({ x: player.x + player.width/2 - 2, y: player.y, width: 4, height: 10, speed: 8.5 });
-                lastAutoFireTime = now;
-            }
-
-            if(Math.random() < 0.04 && aliens.length < 5) {
-                aliens.push({ x: Math.random() * (canvas.width - 30), y: -30, width: 30, height: 24, speed: 2.4 });
-            }
-
-            lasers.forEach(l => l.y -= l.speed);
-            lasers = lasers.filter(l => l.y > 0);
-            aliens.forEach(a => a.y += a.speed);
-
-            for(let i=0; i<aliens.length; i++) {
-                if(aliens[i].y > canvas.height) { endInteractiveGameSession(); return; }
-                if (aliens[i].x < player.x + player.width && aliens[i].x + aliens[i].width > player.x &&
-                    aliens[i].y < player.y + player.height && aliens[i].y + aliens[i].height > player.y) {
-                    endInteractiveGameSession(); return;
-                }
-            }
-
-            for(let lIdx = lasers.length - 1; lIdx >= 0; lIdx--) {
-                for(let aIdx = aliens.length - 1; aIdx >= 0; aIdx--) {
-                    let la = lasers[lIdx]; let al = aliens[aIdx];
-                    if(la && al && la.x < al.x + al.width && la.x + la.width > al.x && la.y < al.y + al.height && la.y + la.height > al.y) {
-                        lasers.splice(lIdx, 1); aliens.splice(aIdx, 1);
-                        shooterScore++; updateLiveCoinsDisplay(shooterScore * 5);
-                        break;
-                    }
-                }
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00fff0"; ctx.fillRect(player.x, player.y, player.width, player.height);
-            ctx.fillStyle = "#ff0055"; lasers.forEach(l => ctx.fillRect(l.x, l.y, l.width, l.height));
-            ctx.fillStyle = "#a855f7"; aliens.forEach(a => ctx.fillRect(a.x, a.y, a.width, a.height));
-
-            animationFrameId = requestAnimationFrame(runGalaxyShooterCycle);
-        }
-
-        // FLAPPY BIRD PRO
-        let bird, pipes, birdScore;
-        function initFlappyBirdGame() {
-            bird = { x: 50, y: 150, velocity: 0, gravity: 0.38, jump: -6.2, radius: 11 };
-            pipes = []; birdScore = 0;
-            
-            canvas.onmousedown = () => { bird.velocity = bird.jump; };
-            canvas.ontouchstart = (e) => { e.preventDefault(); bird.velocity = bird.jump; };
-            window.onkeydown = (e) => { if(e.key === " " || e.key === "Spacebar") bird.velocity = bird.jump; };
-
-            runFlappyBirdLoop();
-        }
-
-        function runFlappyBirdLoop() {
-            if(!isGameRunning) return;
-
-            bird.velocity += bird.gravity; bird.y += bird.velocity;
-
-            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 160) {
-                let gap = 125;
-                let topHeight = Math.floor(Math.random() * (canvas.height - gap - 100)) + 40;
-                pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - topHeight - gap, passed: false });
-            }
-
-            pipes.forEach(p => {
-                p.x -= 2.4;
-                if(!p.passed && p.x < bird.x) { p.passed = true; birdScore++; updateLiveCoinsDisplay(birdScore * 2); }
+        function switchSystemView(viewId, elementRef) {
+            appData.activeView = viewId;
+            document.querySelectorAll('.nav-node-btn').forEach(btn => {
+                btn.className = "nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all text-slate-500 font-medium";
             });
-
-            pipes = pipes.filter(p => p.x > -50);
-            if (bird.y + bird.radius > canvas.height || bird.y - bird.radius < 0) { endInteractiveGameSession(); return; }
-
-            for (let i = 0; i < pipes.length; i++) {
-                let p = pipes[i];
-                if (bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + 40) {
-                    if (bird.y - bird.radius < p.top || bird.y + bird.radius > canvas.height - p.bottom) {
-                        endInteractiveGameSession(); return;
-                    }
-                }
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = "#10b981"; pipes.forEach(p => { ctx.fillRect(p.x, 0, 40, p.top); ctx.fillRect(p.x, canvas.height - p.bottom, 40, p.bottom); });
-
-            animationFrameId = requestAnimationFrame(runFlappyBirdLoop);
+            elementRef.className = "nav-node-btn flex flex-col items-center gap-1 py-1 px-3.5 transition-all rounded-xl nav-btn-active";
+            renderActiveViewEngine();
         }
 
-        // SNAKE ENGINE
-        let snake, snakeFood, snakeDx, snakeDy, snakeScore, gridSquareSize;
-        let touchStartX = 0, touchStartY = 0;
+        // Action Drivers
+        function executeStudyLogAction() {
+            if(appData.dailyStudyLog.loggedToday) return alert("Today's structural study payload already synced!");
+            appData.dailyStudyLog.tracked += 1.5;
+            appData.hoursTracked += 1.5;
+            appData.points += 40;
+            appData.dailyStudyLog.loggedToday = true;
+            triggerNotificationDisplay("Study session registered! +40 Fluxaa Points allocated.");
+            renderActiveViewEngine();
+        }
 
-        function initSnakeSwipeEngine() {
-            gridSquareSize = 20;
-            snake = [{x: 160, y: 220}, {x: 140, y: 220}, {x: 120, y: 220}];
-            snakeDx = gridSquareSize; snakeDy = 0; snakeScore = 0;
-            generateNewSnakeFoodMatrix();
+        function claimTaskReward(taskId, score) {
+            if(appData.claimedTasks.includes(taskId)) return;
+            appData.claimedTasks.push(taskId);
+            appData.points += score;
+            appData.tasksDone++;
             
-            window.onkeydown = (e) => {
-                if(e.key === "ArrowUp" && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; }
-                if(e.key === "ArrowDown" && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; }
-                if(e.key === "ArrowLeft" && snakeDx === 0) { snakeDx = -gridSquareSize; snakeDy = 0; }
-                if(e.key === "ArrowRight" && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
-            };
+            // Sync specific target progress modification
+            const target = appData.tasks.find(t => t.id === taskId);
+            if(target) target.current = target.max;
 
-            canvas.ontouchstart = (e) => {
-                if (e.touches.length > 0) {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }
-            };
+            triggerNotificationDisplay(`Milestone unlocked! +${score} Points added to wallet ledger.`);
+            renderActiveViewEngine();
+        }
 
-            canvas.ontouchmove = (e) => {
-                if (!isGameRunning || e.touches.length === 0) return;
-                e.preventDefault();
-            };
+        // Core Template Router Module
+        function renderActiveViewEngine() {
+            const container = document.getElementById('appViewport');
+            container.innerHTML = '';
+            
+            const randomQuote = appData.motivationalQuotes[Math.floor(Math.seededRandom ? Math.seededRandom() * 4 : Math.random() * appData.motivationalQuotes.length)];
 
-            canvas.ontouchend = (e) => {
-                if (!isGameRunning || e.changedTouches.length === 0) return;
+            // SCREEN VIEWPORT 1: HOME DASHBOARD
+            if (appData.activeView === 'home') {
+                container.innerHTML = `
+                    <!-- Quote Container Banner -->
+                    <div class="glass-panel p-4 rounded-2xl border-l-2 border-purple-500 bg-gradient-to-r from-purple-950/10 to-transparent">
+                        <span class="text-[9px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Daily Intelligence Sync</span>
+                        <p class="text-xs text-slate-300 italic leading-relaxed">"${randomQuote}"</p>
+                    </div>
+
+                    <!-- Macro Progress Analytics Panel Grid -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="glass-panel p-4 rounded-2xl relative overflow-hidden bg-gradient-to-b from-cyan-500/[0.02] to-transparent glow-cyan">
+                            <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Total Ledger Points</span>
+                            <div class="text-2xl font-black font-mono text-cyan-400 mt-1">${appData.points}</div>
+                            <span class="text-[10px] text-slate-400 block mt-2">Rank Position: <strong class="text-white">#${appData.rank}</strong></span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-2xl bg-gradient-to-b from-purple-500/[0.02] to-transparent">
+                            <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Study Volume Engine</span>
+                            <div class="text-2xl font-black font-mono text-purple-400 mt-1">${appData.hoursTracked}h</div>
+                            <span class="text-[10px] text-slate-400 block mt-2">Tasks Compiled: <strong class="text-white">${appData.tasksDone}</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Daily Study Goal Logging Node Interface -->
+                    <div class="glass-panel p-4 rounded-3xl space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-black uppercase text-slate-200 tracking-wide">Daily Target Horizon</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Objective: Track ${appData.dailyStudyLog.goal} focus hours today</p>
+                            </div>
+                            <span class="text-xs font-mono text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-md">${appData.dailyStudyLog.tracked}/${appData.dailyStudyLog.goal}h</span>
+                        </div>
+                        
+                        <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-500" style="width: ${(appData.dailyStudyLog.tracked / appData.dailyStudyLog.goal) * 100}%"></div>
+                        </div>
+
+                        <div class="pt-1">
+                            <button onclick="executeStudyLogAction()" class="w-full text-center py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all ${appData.dailyStudyLog.loggedToday ? 'bg-white/5 text-slate-600 border border-white/5' : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black shadow-lg shadow-cyan-500/10 hover:opacity-90' }">
+                                ${appData.dailyStudyLog.loggedToday ? 'Session Target Successfully Synced' : 'Log 1.5 Hours Study Session Now'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation Cards System -->
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-black tracking-widest uppercase text-slate-500">Fast Subroutine Operations</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div onclick="switchSystemView('tasks', document.querySelectorAll('.nav-node-btn')[1])" class="p-3 bg-white/[0.01] border border-white/5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-white/[0.03]">
+                                <span class="text-xs text-slate-300">View Active Challenges</span>
+                                <span class="text-xs text-slate-500">➔</span>
+                            </div>
+                            <div onclick="switchSystemView('leaderboard', document.querySelectorAll('.nav-node-btn')[2])" class="p-3 bg-white/[0.01] border border-white/5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-white/[0.03]">
+                                <span class="text-xs text-slate-300">Check Global Rank Matrix</span>
+                                <span class="text-xs text-slate-500">➔</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // SCREEN VIEWPORT 2: TASKS & QUESTS MULTI-CARD PANEL
+            else if (appData.activeView === 'tasks') {
+                let cardsHtml = '';
+                appData.tasks.forEach(task => {
+                    const isClaimed = appData.claimedTasks.includes(task.id);
+                    const progressPercent = Math.min((task.current / task.max) * 100, 100);
+                    const isReadyToClaim = task.current >= task.max && !isClaimed;
+
+                    cardsHtml += `
+                        <div class="glass-panel p-4 rounded-2xl space-y-3 relative overflow-hidden ${task.category === 'special' ? 'border-amber-500/20 bg-gradient-to-r from-amber-500/[0.02] to-transparent' : 'border-white/5'}">
+                            <div class="flex justify-between items-start">
+                                <div class="space-y-0.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] uppercase font-bold tracking-wider bg-white/5 px-2 py-0.5 rounded text-slate-400">${task.category}</span>
+                                        <span class="text-[9px] uppercase font-bold tracking-wider font-mono text-purple-400">${task.difficulty}</span>
+                                    </div>
+                                    <h4 class="text-xs font-extrabold text-white mt-1">${task.title}</h4>
+                                    <p class="text-[11px] text-slate-400 leading-normal">${task.desc}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono font-black text-emerald-400">+${task.score}</span>
+                                    <span class="text-[9px] block text-slate-500 font-bold">PTS</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                                    <span>Engine Progression</span>
+                                    <span>${task.current} / ${task.max}</span>
+                                </div>
+                                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                                </div>
+                            </div>
+
+                            <button onclick="claimTaskReward('${task.id}', ${task.score})" ${!isReadyToClaim ? 'disabled' : ''} class="w-full text-center py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${isClaimed ? 'bg-white/5 text-slate-600' : isReadyToClaim ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20 hover:bg-purple-500' : 'bg-white/[0.02] border border-white/5 text-slate-500'}">
+                                ${isClaimed ? 'Claimed Reward Asset' : isReadyToClaim ? 'Claim Reward' : 'Objective Incomplete'}
+                            </button>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="space-y-1">
+                        <h2 class="text-base font-extrabold text-white">Fluxaa Quest Core</h2>
+                        <p class="text-xs text-slate-400">Complete tasks everyday to stack immediate native token balance</p>
+                    </div>
+                    <div class="space-y-3 mt-2">
+                        ${cardsHtml}
+                    </div>
+                `;
+            }
+
+            // SCREEN VIEWPORT 3: GLOBAL LEADERBOARD ROW & PODIUM LAYER
+            else if (appData.activeView === 'leaderboard') {
+                let podiumBlock = '';
+                let iterationsListBlock = '';
+
+                // Extract top 3 elements for podium rendering
+                const top3 = appData.leaderboard.slice(0, 3);
+                const remainderList = appData.leaderboard.slice(3);
+
+                remainderList.forEach(row => {
+                    iterationsListBlock += `
+                        <div class="flex items-center justify-between p-3.5 bg-white/[0.01] border border-white/5 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-xs text-slate-500 font-bold">#${row.rank}</span>
+                                <img src="${row.avatar}" class="w-7 h-7 rounded-lg bg-white/5 border border-white/5">
+                                <span class="text-xs font-bold text-white">${row.name}</span>
+                            </div>
+                            <span class="text-xs font-mono font-black text-cyan-400">${row.points} Pts</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="space-y-1 mb-4">
+                        <h2 class="text-base font-extrabold text-white">Global Scaled Leaderboard</h2>
+                        <p class="text-xs text-slate-400">Live operational rank updates of the network nodes</p>
+                    </div>
+
+                    <!-- Search Node Utility Box -->
+                    <div class="bg-white/[0.02] border border-white/5 px-3.5 py-2.5 rounded-xl flex items-center gap-2 mb-4">
+                        <span class="text-xs text-slate-500">🔍</span>
+                        <input type="text" placeholder="Search parameters user node..." class="bg-transparent border-none text-xs focus:outline-none w-full text-white">
+                    </div>
+
+                    <!-- Unique Global Podium Segment Layout -->
+                    <div class="grid grid-cols-3 gap-2 items-end pt-6 pb-4 mb-4 bg-gradient-to-b from-purple-950/10 to-transparent rounded-3xl border border-white/[0.02]">
+                        
+                        <!-- Rank 2 -->
+                        <div class="text-center space-y-1">
+                            <img src="${top3[1].avatar}" class="w-10 h-10 rounded-xl mx-auto bg-white/5 border border-white/10">
+                            <h4 class="text-[10px] font-bold text-white truncate px-1">${top3[1].name}</h4>
+                            <span class="text-[9px] font-mono block text-purple-400 font-bold">${top3[1].points}</span>
+                            <div class="bg-slate-800/40 h-12 rounded-t-xl flex items-center justify-center font-black text-xs text-slate-400 border-t border-white/5">2</div>
+                        </div>
+
+                        <!-- Rank 1 (Center Ultimate Podium) -->
+                        <div class="text-center space-y-1 transform -translate-y-2">
+                            <span class="text-base block leading-none">👑</span>
+                            <img src="${top3[0].avatar}" class="w-12 h-12 rounded-xl mx-auto bg-white/5 border-2 border-cyan-400 glow-cyan">
+                            <h4 class="text-xs font-black text-white truncate px-1">${top3[0].name}</h4>
+                            <span class="text-[10px] font-mono block text-cyan-400 font-black">${top3[0].points}</span>
+                            <div class="bg-gradient-to-t from-cyan-950/40 to-cyan-800/40 h-16 rounded-t-xl flex items-center justify-center font-black text-sm text-cyan-400 border-t border-cyan-500/20">1</div>
+                        </div>
+
+                        <!-- Rank 3 -->
+                        <div class="text-center space-y-1">
+                            <img src="${top3[2].avatar}" class="w-10 h-10 rounded-xl mx-auto bg-white/5 border border-white/10">
+                            <h4 class="text-[10px] font-bold text-white truncate px-1">${top3[2].name}</h4>
+                            <span class="text-[9px] font-mono block text-amber-400 font-bold">${top3[2].points}</span>
+                            <div class="bg-slate-800/40 h-9 rounded-t-xl flex items-center justify-center font-black text-xs text-slate-500 border-t border-white/5">3</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Remainder User Lists Segment -->
+                    <div class="space-y-2">
+                        ${iterationsListBlock}
+                    </div>
+                `;
+            }
+
+            // SCREEN VIEWPORT 4: REWARDS BALANCES & HISTORY
+            else if (appData.activeView === 'rewards') {
+                let historyHtml = '';
+                appData.rewardsHistory.forEach(item => {
+                    historyHtml += `
+                        <div class="flex justify-between items-center p-3 bg-white/[0.01] border-b border-white/5 text-xs">
+                            <div>
+                                <h5 class="font-bold text-white">${item.title}</h5>
+                                <span class="text-[9px] font-mono text-slate-500 uppercase">${item.type}</span>
+                            </div>
+                            <span class="font-mono font-bold text-slate-400">${item.cost}</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div class="space-y-1">
+                        <h2 class="text-base font-extrabold text-white">Ecosystem Rewards Pool</h2>
+                        <p class="text-xs text-slate-400">Convert study yield assets into functional subscription tokens</p>
+                    </div>
+
+                    <!-- Main Balance Display Board -->
+                    <div class="glass-panel p-5 rounded-3xl bg-gradient-to-br from-[#0c162d] to-transparent border-cyan-500/10 text-center space-y-1">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest block">Available Balance Core</span>
+                        <div class="text-3xl font-black font-mono text-cyan-400">${appData.points} <span class="text-xs font-sans text-slate-500 font-bold">PTS</span></div>
+                        <p class="text-[10px] text-slate-500 pt-2 border-t border-white/5 mt-2">Estimated Next Weekly Distribution Pool: <strong class="text-white">50,000 Pts</strong></p>
+                    </div>
+
+                    <!-- Target Milestones Blocks -->
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-black tracking-widest uppercase text-slate-500">Available Redeems</h3>
+                        
+                        <div class="p-4 bg-white/[0.01] border border-white/5 rounded-2xl flex justify-between items-center">
+                            <div>
+                                <h4 class="text-xs font-bold text-white">Premium Cloud Server Node Pass</h4>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Unlocks custom tracking analytics systems</p>
+                            </div>
+                            <button class="bg-white text-black font-bold text-[10px] uppercase tracking-wider px-3 py-2 rounded-xl">1500 Pts</button>
+                        </div>
+                    </div>
+
+                    <!-- Rewards Settlement Log Histories -->
+                    <div class="pt-2">
+                        <h3 class="text-[10px] font-black tracking-widest uppercase text-slate-500 mb-2">Operation Settlement Log</h3>
+                        <div class="glass-panel rounded-2xl p-2.5">
+                            ${historyHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // SCREEN VIEWPORT 5: USER PROFILE & LIVE CHART ANALYTICS
+            else if (appData.activeView === 'profile') {
+                container.innerHTML = `
+                    <div class="glass-panel p-5 rounded-3xl text-center relative overflow-hidden bg-gradient-to-b from-white/[0.02] to-transparent">
+                        <img src="${appData.user ? appData.user.photo : ''}" class="w-14 h-14 rounded-2xl mx-auto border border-white/10 shadow-xl mb-2">
+                        <h3 class="text-sm font-black text-white tracking-wide">${appData.user ? appData.user.name : 'User'}</h3>
+                        <p class="text-[11px] font-mono text-slate-500">${appData.user ? appData.user.email : 'handle@node'}</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5">
+                            <div class="bg-black/30 p-2.5 rounded-xl text-left border border-white/[0.02]">
+                                <span class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Productivity Score</span>
+                                <span class="text-xs font-bold text-cyan-400 font-mono">94.2% Efficient</span>
+                            </div>
+                            <div class="bg-black/30 p-2.5 rounded-xl text-left border border-white/[0.02]">
+                                <span class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Global Hierarchy</span>
+                                <span class="text-xs font-bold text-purple-400">Elite Rank Node</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unlocked Achievement Badges Row Segment -->
+                    <div class="space-y-2">
+                        <h3 class="text-[10px] font-black tracking-widest uppercase text-slate-500">Earned Badges Matrix</h3>
+                        <div class="flex gap-2 overflow-x-auto hide-scrollbar py-1">
+                            <span class="inline-block bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold text-cyan-400 whitespace-nowrap">🎓 Study Master</span>
+                            <span class="inline-block bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold text-purple-400 whitespace-nowrap">⚡ 7-Day Streak</span>
+                            <span class="inline-block bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold text-amber-400 whitespace-nowrap">⏳ Consistency Champ</span>
+                        </div>
+                    </div>
+
+                    <!-- LIVE CHART GRAPH CONTAINER VIEW -->
+                    <div class="glass-panel p-4 rounded-2xl space-y-2">
+                        <span class="text-[9px] text-slate-500 font-bold block uppercase tracking-wider">Weekly Metric Graph</span>
+                        <div class="h-36 relative">
+                            <canvas id="profileAnalyticsChartCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <button onclick="window.location.reload();" class="w-full bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 text-red-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all">
+                        Terminate Active Google Token Session
+                    </button>
+                `;
                 
-                let diffX = e.changedTouches[0].clientX - touchStartX;
-                let diffY = e.changedTouches[0].clientY - touchStartY;
-                
-                if (Math.abs(diffX) > 25 || Math.abs(diffY) > 25) {
-                    if (Math.abs(diffX) > Math.abs(diffY)) {
-                        if (diffX > 0 && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
-                        else if (diffX < 0 && snakeDx === 0) { snakeDx = -gridSquareSize; snakeDy = 0; }
-                    } else {
-                        if (diffY > 0 && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; }
-                        else if (diffY < 0 && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; }
+                // Initialize premium graph framework asynchronous instance
+                setTimeout(initializeAnalyticsChartInstance, 50);
+            }
+        }
+
+        // Live ChartJS Initialization Engine
+        function initializeAnalyticsChartInstance() {
+            const ctx = document.getElementById('profileAnalyticsChartCanvas');
+            if(!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Study Hours Tracked',
+                        data: [3.5, 4.2, 5.0, 2.5, 4.8, 6.2, 4.0],
+                        borderColor: '#06B6D4',
+                        borderWidth: 2,
+                        backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#64748B', font: { size: 9 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748B', font: { size: 9 } } }
                     }
                 }
-            };
-
-            canvas.onmousedown = (e) => { touchStartX = e.clientX; touchStartY = e.clientY; };
-            canvas.onmouseup = (e) => {
-                let diffX = e.clientX - touchStartX; let diffY = e.clientY - touchStartY;
-                if (Math.abs(diffX) > 25 || Math.abs(diffY) > 25) {
-                    if (Math.abs(diffX) > Math.abs(diffY)) {
-                        if (diffX > 0 && snakeDx === 0) { snakeDx = gridSquareSize; snakeDy = 0; }
-                        else if (diffX < 0 && snakeDx === 0) { snakeDx = -gridSquareSize; snakeDy = 0; }
-                    } else {
-                        if (diffY > 0 && snakeDy === 0) { snakeDx = 0; snakeDy = gridSquareSize; }
-                        else if (diffY < 0 && snakeDy === 0) { snakeDx = 0; snakeDy = -gridSquareSize; }
-                    }
-                }
-            };
-
-            if(gameLoopIntervalId) clearInterval(gameLoopIntervalId);
-            gameLoopIntervalId = setInterval(runSnakeLogicCycleLoop, 150);
-        }
-
-        function generateNewSnakeFoodMatrix() {
-            snakeFood = {
-                x: Math.floor(Math.random() * (canvas.width / gridSquareSize)) * gridSquareSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSquareSize)) * gridSquareSize
-            };
-        }
-
-        function runSnakeLogicCycleLoop() {
-            if(!isGameRunning) return;
-
-            const snakeHead = { x: snake[0].x + snakeDx, y: snake[0].y + snakeDy };
-            snake.unshift(snakeHead);
-
-            if (snakeHead.x === snakeFood.x && snakeHead.y === snakeFood.y) {
-                snakeScore++; updateLiveCoinsDisplay(snakeScore * 5); generateNewSnakeFoodMatrix();
-            } else {
-                snake.pop();
-            }
-
-            if (snakeHead.x < 0 || snakeHead.x >= canvas.width || snakeHead.y < 0 || snakeHead.y >= canvas.height) { endInteractiveGameSession(); return; }
-            for (let i = 1; i < snake.length; i++) { if (snakeHead.x === snake[i].x && snakeHead.y === snake[i].y) { endInteractiveGameSession(); return; } }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#f43f5e"; ctx.fillRect(snakeFood.x, snakeFood.y, gridSquareSize - 2, gridSquareSize - 2);
-
-            snake.forEach((segment, idx) => {
-                ctx.fillStyle = idx === 0 ? "#00fff0" : "#047857";
-                ctx.fillRect(segment.x, segment.y, gridSquareSize - 2, gridSquareSize - 2);
             });
         }
-
-        // CASH INFRASTRUCTURE OPERATIONS
-        let withdrawWorkflowStep = 1; let tempCoinsToDeduct = 0;
-        function openWithdrawModal() {
-            withdrawWorkflowStep = 1; tempCoinsToDeduct = 0;
-            document.getElementById('input-coins').value = ""; document.getElementById('input-upi').value = ""; document.getElementById('input-mobile').value = "";
-            document.getElementById('upi-fields').classList.add('hidden'); document.getElementById('input-coins').disabled = false;
-            document.getElementById('btn-modal-action').textContent = "Next"; document.getElementById('modal-withdraw').classList.remove('hidden');
-        }
-        function closeWithdrawModal() { document.getElementById('modal-withdraw').classList.add('hidden'); }
-
-        function processWithdrawFormSubmit() {
-            if(withdrawWorkflowStep === 1) {
-                let enteredCoins = parseInt(document.getElementById('input-coins').value) || 0;
-                if(enteredCoins < 500) { alert("🚨 Minimum redemption volume is 500 Coins!"); return; }
-                if(enteredCoins > walletCoins) { alert("🚨 Balance depth error!"); return; }
-                tempCoinsToDeduct = enteredCoins;
-                withdrawWorkflowStep = 2;
-                document.getElementById('input-coins').disabled = true; document.getElementById('upi-fields').classList.remove('hidden');
-                document.getElementById('btn-modal-action').textContent = "Confirm Cashout";
-            } else if (withdrawWorkflowStep === 2) {
-                let upiStr = document.getElementById('input-upi').value.trim();
-                let mobStr = document.getElementById('input-mobile').value.trim();
-                if(!upiStr || !mobStr) { alert("🚨 Full identification inputs required!"); return; }
-
-                walletCoins -= tempCoinsToDeduct;
-                localStorage.setItem(KEY_COINS, walletCoins);
-
-                let orderPacket = {
-                    id: "FLX-" + Date.now().toString().slice(-6),
-                    coins: tempCoinsToDeduct, rupees: (tempCoinsToDeduct / 100).toFixed(2),
-                    upi: upiStr, mobile: mobStr, status: "processing", timestamp: new Date().toLocaleString()
-                };
-                ordersList.unshift(orderPacket); localStorage.setItem(KEY_ORDERS, JSON.stringify(ordersList));
-                closeWithdrawModal(); alert(`🎉 Receipt Queued: ${orderPacket.id}`); syncUIRefresh();
-            }
-        }
-
-        function renderUserHistory() {
-            let container = document.getElementById('history-container'); container.innerHTML = "";
-            if(ordersList.length === 0) { container.innerHTML = `<p class="text-neutral-600 text-xs text-center py-4">No logged items synced.</p>`; return; }
-            ordersList.forEach(item => {
-                let isPending = item.status === "processing";
-                container.innerHTML += `
-                    <div class="bg-[#141822] border border-neutral-800 rounded-xl p-3 flex justify-between items-center text-xs">
-                        <div><p class="font-bold font-mono text-neutral-300">${item.id}</p><p class="text-[10px] text-neutral-500 mt-0.5">UPI ID: ${item.upi}</p></div>
-                        <div class="text-right"><p class="font-black text-emerald-400 font-mono">₹${item.rupees}</p>
-                        <span class="inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded border mt-1 ${isPending ? 'text-amber-400 bg-amber-500/5 border-amber-500/20' : 'text-emerald-400 bg-emerald-500/5 border-emerald-500/20'}">${item.status}</span></div>
-                    </div>`;
-            });
-        }
-
-        function triggerAdminSecret() {
-            secretClickCounter++;
-            if(secretClickCounter >= 5) {
-                secretClickCounter = 0; 
-                let inputPass = prompt("🔑 Core Admin Matrix Security Key:");
-                if(inputPass === MASTER_PASS) { switchPage('page-admin', null); }
-            }
-        }
-
-        function renderAdminDashboardOrders() {
-            let container = document.getElementById('admin-orders-container'); container.innerHTML = "";
-            if(ordersList.length === 0) { container.innerHTML = `<p class="text-neutral-600 text-xs text-center py-6">Database clear. No tasks queued.</p>`; return; }
-            ordersList.forEach((item, index) => {
-                let isPending = item.status === "processing";
-                container.innerHTML += `
-                    <div class="bg-[#141822] border border-neutral-800 rounded-2xl p-4 flex flex-col justify-between gap-3 text-xs shadow-md">
-                        <div class="space-y-1"><p class="font-black text-neutral-200">${item.id} <span class="text-[10px] font-mono text-neutral-500 ml-2">${item.timestamp}</span></p>
-                        <p class="text-neutral-400">UPI Address: <b class="text-neutral-200 font-mono">${item.upi}</b></p></div>
-                        <div class="flex justify-between items-center border-t border-neutral-800/60 pt-2.5"><span class="font-mono text-sm font-black text-emerald-400">₹${item.rupees}</span>
-                        ${isPending ? `<button onclick="settleAdminOrderAction(${index})" class="bg-emerald-500 text-neutral-950 font-black px-4 py-2 rounded-xl text-[10px] uppercase">Settle Transfer</button>` : `<span class="text-emerald-400 font-bold text-[10px] uppercase">Paid Successfully</span>`}</div>
-                    </div>`;
-            });
-        }
-
-        function settleAdminOrderAction(index) {
-            if(confirm("Mark this user cashout payload as PAID?")) {
-                ordersList[index].status = "success"; localStorage.setItem(KEY_ORDERS, JSON.stringify(ordersList)); syncUIRefresh();
-            }
-        }
-        syncUIRefresh();
     </script>
 </body>
 </html>
