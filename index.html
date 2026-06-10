@@ -14,7 +14,7 @@
         .page-content.active { display: block; }
     </style>
 </head>
-<body class="min-h-screen max-w-md mx-auto shadow-2xl border-x border-white/5 flex flex-col justify-between">
+<body class="min-h-screen max-w-md mx-auto shadow-2xl border-x border-white/5 flex flex-col justify-between relative">
 
     <!-- FIXED TOP HEADER -->
     <header class="p-4 bg-black/60 backdrop-blur-md border-b border-white/5 flex justify-between items-center sticky top-0 z-50">
@@ -73,7 +73,7 @@
         <!-- PAGE 2: COIN STATION (ADS & DAILY BONUS) -->
         <div id="adsPage" class="page-content space-y-4">
             
-            <!-- 🎁 NEW FEATURE: FREE DAILY BONUS PANEL -->
+            <!-- 🎁 FREE DAILY BONUS PANEL -->
             <div id="bonusCard" class="bg-gradient-to-r from-amber-500/10 to-zinc-900 border border-amber-500/20 p-4 rounded-3xl flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-lg">🎁</div>
@@ -87,14 +87,13 @@
                 </button>
             </div>
 
-            <!-- WATCH ADS MODULE (FIXED TO 8 ADS) -->
+            <!-- WATCH ADS MODULE -->
             <div class="bg-gradient-to-r from-purple-950/20 to-zinc-900 border border-purple-500/20 p-5 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center">
                     <div>
                         <span class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Daily Video Tasks</span>
                         <h3 class="text-xs font-bold text-zinc-300 mt-1">Watch Video Ad</h3>
                     </div>
-                    <!-- Ads Counter set to 8 -->
                     <span id="adCounterDisplay" class="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg">Ads: 0 / 8</span>
                 </div>
                 
@@ -125,7 +124,7 @@
                     </div>
                 </div>
 
-                <button onclick="triggerWithdrawal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg">
+                <button onclick="openWithdrawModal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg">
                     💰 Request Instant UPI Payout
                 </button>
             </div>
@@ -139,6 +138,42 @@
         </div>
 
     </main>
+
+    <!-- ================= 📌 NEW FEATURE: WITHDRAWAL FORM MODAL ================= -->
+    <div id="withdrawModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] hidden">
+        <div class="bg-zinc-950 border border-white/10 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                <h3 class="text-sm font-black text-white uppercase tracking-wider">🔒 UPI Verification</h3>
+                <button onclick="closeWithdrawModal()" class="text-zinc-400 hover:text-white font-bold text-sm">✕</button>
+            </div>
+            
+            <p class="text-[11px] text-zinc-400">Payout secure karne ke liye apni sahi details bharein:</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">Pura Naam (Full Name)</label>
+                    <input type="text" id="usrName" placeholder="Rahul Kumar" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">UPI ID</label>
+                    <input type="text" id="usrUpi" placeholder="username@apl" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">Gmail Account</label>
+                    <input type="email" id="usrEmail" placeholder="example@gmail.com" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+
+            <div class="pt-2 grid grid-cols-2 gap-3">
+                <button onclick="closeWithdrawModal()" class="w-full bg-zinc-900 text-zinc-400 font-bold text-xs py-3 rounded-xl border border-white/5">
+                    Cancel
+                </button>
+                <button onclick="triggerWithdrawal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs py-3 rounded-xl shadow-lg">
+                    Confirm & Payout
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ================= FIXED BOTTOM NAV BAR ================= -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/80 backdrop-blur-lg border-t border-white/5 grid grid-cols-3 p-2 z-50">
@@ -158,6 +193,9 @@
 
     <!-- ================= MECHANICS LOGIC CORE ================= -->
     <script>
+        // 🔗 APNA GOOGLE APPS SCRIPT URL YAHAN PASTE KAREIN
+        const GOOGLE_SHEET_WEBAPP_URL = "YOUR_WEB_APP_URL_HERE";
+
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = canvas.offsetWidth;
@@ -174,16 +212,31 @@
             isWatchingAd: false,
             adCooldownActive: false,
             
-            // Fixed System Rules
             adsViewedToday: 0,
-            maxAdsPerDay: 8,          // Fixed to 8 Ads
-            isBonusClaimed: false,    // New Daily Bonus Tracker
+            maxAdsPerDay: 8,
+            isBonusClaimed: false,
             
             dailyWithdrawnToday: 0,
             maxDailyLimitINR: 10
         };
 
-        // PAGE TAB SWITCHER LOGIC
+        // 📊 DATA TO GOOGLE SHEET FUNCTION
+        function syncWithGoogleSheet(actionType, details) {
+            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === "YOUR_WEB_APP_URL_HERE") return;
+
+            fetch(GOOGLE_SHEET_WEBAPP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    actionType: actionType,
+                    balance: Math.round(gameState.balance),
+                    details: details
+                })
+            }).catch(err => console.log("Sheet Sync Error: ", err));
+        }
+
+        // TAB SWITCHER
         function switchTab(pageId, buttonElement) {
             if (gameState.status === 'FLYING') {
                 alert("🔴 Flight running hai bhai! Pehle Cash out karo.");
@@ -218,7 +271,6 @@
             document.getElementById('dailyWithdrawnDisplay').innerText = `₹${gameState.dailyWithdrawnToday.toFixed(2)} / ₹${gameState.maxDailyLimitINR}`;
             document.getElementById('adCounterDisplay').innerText = `Ads: ${gameState.adsViewedToday} / ${gameState.maxAdsPerDay}`;
             
-            // Check Ads Cap
             if (gameState.adsViewedToday >= gameState.maxAdsPerDay) {
                 const adBtn = document.getElementById('adBtn');
                 adBtn.disabled = true;
@@ -226,7 +278,6 @@
                 adBtn.innerText = "🛑 Daily Ad Limit Reached (8/8)";
             }
 
-            // Check Daily Bonus Cap
             if (gameState.isBonusClaimed) {
                 const bonusBtn = document.getElementById('bonusBtn');
                 bonusBtn.disabled = true;
@@ -236,17 +287,36 @@
             }
         }
 
-        // 🎁 NEW: CLAIM DAILY FREE BONUS FUNCTION
-        function claimDailyBonus() {
-            if (gameState.isBonusClaimed) return;
-
-            gameState.balance += 10; // Award 10 Coins
-            gameState.isBonusClaimed = true;
-            updateWalletUI();
-            alert("🎉 Badhai ho! Aapko aaj ka Free Daily Bonus (+10 FC) mil gaya hai.");
+        // MODAL TOGGLE FUNCTIONS
+        function openWithdrawModal() {
+            const currentCoins = Math.round(gameState.balance);
+            if (currentCoins < 100) {
+                alert(`⚠️ Error: Minimum withdrawal limit ₹1 (100 FC) hai!`);
+                return;
+            }
+            const allowedTodayINR = gameState.maxDailyLimitINR - gameState.dailyWithdrawnToday;
+            if (allowedTodayINR <= 0) {
+                alert(`🛑 Daily Limit Reached! Aaj ka payout ho chuka hai.`);
+                return;
+            }
+            document.getElementById('withdrawModal').classList.remove('hidden');
         }
 
-        // AD REWARD SYSTEM ENGINE (8 LIMIT + 30s COOLDOWN)
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+        }
+
+        // CLAIM DAILY BONUS
+        function claimDailyBonus() {
+            if (gameState.isBonusClaimed) return;
+            gameState.balance += 10;
+            gameState.isBonusClaimed = true;
+            updateWalletUI();
+            alert("🎉 Badhai ho! Aaj ka Free Daily Bonus (+10 FC) mil gaya hai.");
+            syncWithGoogleSheet("CLAIM_BONUS", "Claimed 10 Free Coins Daily Bonus");
+        }
+
+        // WATCH ADS
         function watchVideoAd() {
             if (gameState.isWatchingAd || gameState.adCooldownActive) return;
             if (gameState.adsViewedToday >= gameState.maxAdsPerDay) return;
@@ -270,6 +340,8 @@
                     updateWalletUI();
                     gameState.isWatchingAd = false;
                     
+                    syncWithGoogleSheet("WATCH_AD", `Watched Ad #${gameState.adsViewedToday}. Earned 10 FC`);
+
                     if (gameState.adsViewedToday < gameState.maxAdsPerDay) {
                         triggerAdCooldown(30);
                     }
@@ -281,164 +353,4 @@
             gameState.adCooldownActive = true;
             const adBtn = document.getElementById('adBtn');
             const timerLabel = document.getElementById('adTimerLabel');
-            let cooldownLeft = seconds;
-
-            adBtn.disabled = true;
-            adBtn.classList.add('btn-cooldown');
-            adBtn.innerText = `🔒 Lock: Next Ad available in ${cooldownLeft}s`;
-            timerLabel.classList.remove('hidden');
-
-            const cooldownInterval = setInterval(() => {
-                cooldownLeft--;
-                if (cooldownLeft > 0) {
-                    adBtn.innerText = `🔒 Lock: Next Ad available in ${cooldownLeft}s`;
-                } else {
-                    clearInterval(cooldownInterval);
-                    gameState.adCooldownActive = false;
-                    
-                    if (gameState.adsViewedToday < gameState.maxAdsPerDay) {
-                        adBtn.disabled = false;
-                        adBtn.classList.remove('btn-cooldown');
-                        adBtn.className = "w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg text-center";
-                        adBtn.innerText = "📺 Watch Video Ad (+10 FC)";
-                    }
-                    timerLabel.classList.add('hidden');
-                }
-            }, 1000);
-        }
-
-        function setBetAmount(amt) {
-            if(gameState.status === 'FLYING') return;
-            document.getElementById('betInput').value = amt;
-        }
-
-        function handlePrimaryAction() {
-            const betInputVal = Math.floor(parseFloat(document.getElementById('betInput').value)) || 0;
-
-            if (gameState.status === 'IDLE' || gameState.status === 'CRASHED' || gameState.status === 'CASHED_OUT') {
-                if (betInputVal > gameState.balance) {
-                    alert("Coins nahi hain bhai! EARN COINS waale page par jaakar bonus ya ad collect karo.");
-                    return;
-                }
-                if (betInputVal < 1) return;
-
-                gameState.betAmount = betInputVal;
-                gameState.balance -= gameState.betAmount;
-                updateWalletUI();
-                launchSequence();
-            } else if (gameState.status === 'FLYING') {
-                executeCashOut();
-            }
-        }
-
-        function launchSequence() {
-            gameState.status = 'FLYING';
-            gameState.multiplier = 1.00;
-            gameState.timeElapsed = 0;
-            
-            const rand = Math.random();
-            if (rand < 0.18) { gameState.crashPoint = 1.00 + Math.random() * 0.04; }
-            else if (rand < 0.78) { gameState.crashPoint = 1.05 + Math.random() * 1.6; }
-            else { gameState.crashPoint = 2.65 + Math.random() * 6.5; }
-
-            document.getElementById('statusLabel').innerText = "Flight in Progress...";
-            document.getElementById('statusLabel').className = "text-[10px] text-red-500 font-mono tracking-widest uppercase mt-1 font-bold animate-pulse";
-            
-            const btn = document.getElementById('actionBtn');
-            btn.innerText = "💥 CASH OUT";
-            btn.className = "w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-sm uppercase tracking-widest py-4 rounded-2xl shadow-xl transition-all";
-
-            runFlightAnimation();
-        }
-
-        function runFlightAnimation() {
-            if (gameState.status !== 'FLYING') return;
-            gameState.timeElapsed += 0.016; 
-            gameState.multiplier = 1.00 + Math.pow(gameState.timeElapsed, 1.8) * 0.4;
-            document.getElementById('multiplierDisplay').innerText = gameState.multiplier.toFixed(2) + "x";
-
-            drawGraphCurve(gameState.timeElapsed);
-
-            if (gameState.multiplier >= gameState.crashPoint) {
-                gameState.status = 'CRASHED';
-                document.getElementById('multiplierDisplay').innerText = "FLEW AWAY!";
-                pushHistoryLog(gameState.crashPoint.toFixed(2), 'red');
-                resetControlButtons();
-                return;
-            }
-            gameState.animationFrame = requestAnimationFrame(runFlightAnimation);
-        }
-
-        function drawGraphCurve(time) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let startX = 20, startY = canvas.height - 20;
-            let endX = startX + (time * 32), endY = startY - (Math.pow(time, 1.8) * 9);
-            if(endX > canvas.width - 40) endX = canvas.width - 40;
-            if(endY < 40) endY = 40;
-
-            ctx.beginPath(); ctx.moveTo(startX, startY);
-            ctx.quadraticCurveTo(startX + (endX - startX)/2, startY, endX, endY);
-            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.stroke();
-
-            ctx.save(); ctx.font = "24px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.translate(endX, endY); ctx.fillText("✈️", 0, 0); ctx.restore();
-        }
-
-        function executeCashOut() {
-            gameState.status = 'CASHED_OUT';
-            cancelAnimationFrame(gameState.animationFrame);
-            const profitCoins = gameState.betAmount * gameState.multiplier;
-            gameState.balance += profitCoins;
-            updateWalletUI();
-            pushHistoryLog(gameState.multiplier.toFixed(2), 'emerald');
-            resetControlButtons();
-            alert(`🎉 Success! Tumne ${gameState.balance} FC secure kar liye.`);
-        }
-
-        function resetControlButtons() {
-            const btn = document.getElementById('actionBtn');
-            btn.innerText = "🛫 Place Bet & Launch";
-            btn.className = "w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-sm uppercase tracking-widest py-4 rounded-2xl shadow-xl transition-all";
-        }
-
-        function pushHistoryLog(val, color) {
-            const strip = document.getElementById('historyStrip');
-            const bgClass = color === 'red' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
-            const badge = document.createElement('span');
-            badge.className = `${bgClass} border font-mono text-[10px] px-2.5 py-1 rounded-lg font-bold`;
-            badge.innerText = val + "x";
-            strip.insertBefore(badge, strip.firstChild);
-        }
-
-        function triggerWithdrawal() {
-            const currentCoins = Math.round(gameState.balance);
-            const requestedINR = currentCoins / 100;
-
-            if (currentCoins < 100) {
-                alert(`⚠️ Error: Minimum withdrawal limit ₹1 (100 FC) hai!`);
-                return;
-            }
-
-            const allowedTodayINR = gameState.maxDailyLimitINR - gameState.dailyWithdrawnToday;
-            if (allowedTodayINR <= 0) {
-                alert(`🛑 Daily Limit Reached! Aaj ka payout ho chuka hai.`);
-                return;
-            }
-
-            let finalWithdrawINR = requestedINR;
-            let coinsToDeduct = currentCoins;
-            if (requestedINR > allowedTodayINR) {
-                finalWithdrawINR = allowedTodayINR;
-                coinsToDeduct = allowedTodayINR * 100;
-            }
-
-            gameState.dailyWithdrawnToday += finalWithdrawINR;
-            gameState.balance -= coinsToDeduct;
-            updateWalletUI();
-            alert(`✅ Success! ₹${finalWithdrawINR.toFixed(2)} ka instant payout process ho gaya.`);
-        }
-
-        updateWalletUI();
-    </script>
-</body>
-</html>
+            let cooldownLe
