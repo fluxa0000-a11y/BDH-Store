@@ -13,6 +13,38 @@
         .btn-cooldown { background: #1c1917 !important; color: #78716c !important; border-color: #44403c !important; }
         .page-content { display: none; }
         .page-content.active { display: block; }
+
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background: #0b0c10; 
+        color: #f3f4f6; 
+        margin: 0;
+        padding: 0;
+    }
+    .digital-font { font-family: 'Orbitron', sans-serif; }
+    .btn-cooldown { background: #1c1917 !important; color: #78716c !important; border-color: #44403c !important; }
+    
+    /* FALLBACK IF TAILWIND FAILS TO LOAD */
+    .page-content { display: none; }
+    .page-content.active { display: block; }
+    
+    /* Strict fallback for Modal closure */
+    #withdrawModal.hidden { display: none !important; }
+    #withdrawModal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+    }
+    
+    /* Basic native styling for unstyled buttons in case of script lag */
+    button {
+        cursor: pointer;
+        border-radius: 8px;
+    }
     </style>
 </head>
 <body class="min-h-screen max-w-md mx-auto shadow-2xl border-x border-white/5 flex flex-col justify-between relative">
