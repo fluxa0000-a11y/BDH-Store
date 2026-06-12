@@ -1,564 +1,325 @@
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxaa Aviator Platform</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=700;900&family=Plus+Jakarta+Sans:wght=600;800&display=swap" rel="stylesheet">
-    
+    <title>₣ Fluxaa - Play & Earn</title>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0b0c10; color: #f3f4f6; }
-        .digital-font { font-family: 'Orbitron', sans-serif; }
-        .btn-cooldown { background: #1c1917 !important; color: #78716c !important; border-color: #44403c !important; }
-        .page-content { display: none; }
-        .page-content.active { display: block; }
-
-        /* Modal Strict Rules */
-        #withdrawModal.hidden { display: none !important; }
-        #withdrawModal {
+        :root {
+            --primary: #1e3c72;
+            --secondary: #2a5298;
+            --success: #11998e;
+            --danger: #ea2027;
+            --light: #f8f9fa;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            width: 80%;
+            margin: 10px 0;
+        }
+        .btn:hover { transform: scale(1.03); }
+        
+        /* FULL SCREEN BANNER AD MODAL */
+        .ad-overlay {
+            display: none;
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9) !important;
-            display: flex;
-            align-items: center;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
             justify-content: center;
-            z-index: 100;
+            align-items: center;
+            flex-direction: column;
+        }
+        .ad-box {
+            background: white;
+            width: 90%;
+            max-width: 360px;
+            height: 80vh;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .close-ad-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* SEPARATE PAGES CONTROL */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* QUIZ STYLING */
+        .option-btn {
+            background: #f0f2f5;
+            color: #333;
+            border: 2px solid #e4e6eb;
+            padding: 12px;
+            width: 100%;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: left;
+            font-weight: bold;
+        }
+        #feedback {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .correct { color: var(--success); }
+        .wrong { color: var(--danger); }
+
+        /* SPIN WHEEL STYLING */
+        .wheel-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 30px auto;
+        }
+        .main-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid var(--primary);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
+            background: conic-gradient(
+                #ff7675 0deg 60deg, #74b9ff 60deg 120deg, 
+                #55efc4 120deg 180deg, #ffeaa7 180deg 240deg, 
+                #a29bfe 240deg 300deg, #fd79a8 300deg 360deg
+            );
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -15px; left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid var(--danger);
+            z-index: 10;
         }
     </style>
 </head>
-<body class="min-h-screen max-w-md mx-auto shadow-2xl border-x border-white/5 flex flex-col justify-between relative">
+<body>
 
-    <!-- FIXED TOP HEADER -->
-    <header class="p-4 bg-black/60 backdrop-blur-md border-b border-white/5 flex justify-between items-center sticky top-0 z-50">
-        <div>
-            <span class="text-[9px] text-red-500 font-extrabold tracking-widest block">FLUXAA TECHNOLOGIES</span>
-            <h1 id="pageTitle" class="text-sm font-black tracking-tight text-white uppercase">Aviator Game</h1>
+    <header>₣ Fluxaa</header>
+
+    <div id="mainPage" class="page active container">
+        <div class="card">
+            <h2>Welcome to ₣ Fluxaa Dashboard</h2>
+            <p>Complete tasks safely and cash out via UPI.</p>
         </div>
-        <!-- Global Wallet Badge -->
-        <div class="bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
-            <span class="text-xs text-amber-400">🪙</span>
-            <span id="globalBalance" class="digital-font text-xs text-amber-400 font-bold">0</span>
-            <span class="text-[9px] text-zinc-500 font-bold">FC</span>
-        </div>
-    </header>
+        <button class="btn" onclick="showAdAndNavigate('quizPage')">🎯 Start Premium Quiz</button>
+        <button class="btn" onclick="showAdAndNavigate('wheelPage')">🎡 Spin Lucky Wheel</button>
+    </div>
 
-    <!-- ================= PAGES CONTAINER ================= -->
-    <main class="p-4 flex-1 overflow-y-auto mb-16">
-
-        <!-- PAGE 1: AVIATOR GAME PANEL -->
-        <div id="gamePage" class="page-content active space-y-4">
-            <!-- Canvas Radar Area -->
-            <div class="w-full h-64 bg-zinc-950 border border-white/5 rounded-3xl relative overflow-hidden flex flex-col items-center justify-center">
-                <div class="absolute top-16 text-center z-20 pointer-events-none">
-                    <h2 id="multiplierDisplay" class="digital-font text-5xl font-black tracking-wider text-white">1.00x</h2>
-                    <p id="statusLabel" class="text-[10px] text-zinc-500 font-mono tracking-widest uppercase mt-1">Engine Ready</p>
-                </div>
-                <canvas id="graphCanvas" class="w-full h-full absolute inset-0 z-10"></canvas>
-            </div>
-
-            <!-- History Strip -->
-            <div class="space-y-1.5">
-                <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block px-1">Recent Crashes</span>
-                <div id="historyStrip" class="flex gap-2 overflow-x-auto pb-1">
-                    <span class="bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-[10px] px-2.5 py-1 rounded-lg font-bold">1.40x</span>
-                    <span class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] px-2.5 py-1 rounded-lg font-bold">2.15x</span>
-                </div>
-            </div>
-
-            <!-- Bet Control Form -->
-            <div class="bg-zinc-900/50 border border-white/5 p-4 rounded-3xl space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-zinc-400">Bet Configuration (FC)</span>
-                    <div class="flex gap-1.5">
-                        <button onclick="setBetAmount(10)" class="bg-zinc-800 text-[10px] px-2.5 py-1 rounded-lg font-mono text-amber-400 font-bold border border-zinc-700">10 FC</button>
-                        <button onclick="setBetAmount(50)" class="bg-zinc-800 text-[10px] px-2.5 py-1 rounded-lg font-mono text-amber-400 font-bold border border-zinc-700">50 FC</button>
-                    </div>
-                </div>
-                <!-- FIXED: onblur use kiya taaki typing ke beech me value reset na ho -->
-                <input type="number" id="betInput" value="10" min="1" onblur="if(this.value==='' || this.value < 1) this.value=1;" class="w-full bg-zinc-950 border border-white/5 rounded-xl p-3 text-sm text-amber-400 font-mono font-bold focus:outline-none focus:border-amber-500 text-center">
-                <button id="actionBtn" onclick="handlePrimaryAction()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-sm uppercase tracking-widest py-4 rounded-2xl shadow-xl transition-all">
-                    🛫 Place Bet & Launch
-                </button>
-            </div>
-        </div>
-
-
-        <!-- PAGE 2: COIN STATION (ADS & DAILY BONUS) -->
-        <div id="adsPage" class="page-content space-y-4">
-            
-            <!-- 🎁 FREE DAILY BONUS PANEL -->
-            <div id="bonusCard" class="bg-gradient-to-r from-amber-500/10 to-zinc-900 border border-amber-500/20 p-4 rounded-3xl flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-lg">🎁</div>
-                    <div>
-                        <h4 class="text-xs font-bold text-white">Daily Free Bonus</h4>
-                        <p class="text-[10px] text-zinc-400">Claim 10 FC without any ads!</p>
-                    </div>
-                </div>
-                <button id="bonusBtn" onclick="claimDailyBonus()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-black font-extrabold text-[11px] px-4 py-2 rounded-xl shadow-lg transition-all active:scale-95">
-                    CLAIM
-                </button>
-            </div>
-
-            <!-- WATCH ADS MODULE -->
-            <div class="bg-gradient-to-r from-purple-950/20 to-zinc-900 border border-purple-500/20 p-5 rounded-3xl space-y-4">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Daily Video Tasks</span>
-                        <h3 class="text-xs font-bold text-zinc-300 mt-1">Watch Video Ad</h3>
-                    </div>
-                    <span id="adCounterDisplay" class="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg">Ads: 0 / 8</span>
-                </div>
-                
-                <button id="adBtn" onclick="watchVideoAd()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
-                    📺 Watch Video Ad (+10 FC)
-                </button>
-                <p id="adTimerLabel" class="text-[9px] text-zinc-500 text-center hidden font-mono">Anti-spam guard cooldown system active.</p>
-            </div>
-        </div>
-
-
-        <!-- PAGE 3: WALLET & PAYOUT PROTOCOL -->
-        <div id="walletPage" class="page-content space-y-4">
-            <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-white/5 p-5 rounded-3xl space-y-4">
-                <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                    <h3 class="text-xs font-black text-zinc-200 uppercase tracking-wider">🏦 Fluxaa Bank Gateway</h3>
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">100 FC = ₹1</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 text-xs font-mono">
-                    <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
-                        <span class="text-zinc-500 block text-[9px] uppercase font-sans font-bold mb-1">Redeemable Cash</span>
-                        <span id="inrValue" class="text-emerald-400 font-bold text-base">₹0.00</span>
-                    </div>
-                    <div class="bg-black/40 p-3 rounded-2xl border border-white/5">
-                        <span class="text-zinc-500 block text-[9px] uppercase font-sans font-bold mb-1">Today's Payout</span>
-                        <span id="dailyWithdrawnDisplay" class="text-purple-400 font-bold text-base">₹0 / ₹10</span>
-                    </div>
-                </div>
-
-                <button onclick="openWithdrawModal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg">
-                    💰 Request Instant UPI Payout
-                </button>
-            </div>
-
-            <!-- Terms HUD Panel -->
-            <div class="bg-zinc-900/30 border border-white/5 p-4 rounded-2xl text-[10px] text-zinc-500 space-y-1.5">
-                <span class="font-bold text-zinc-400 block uppercase text-[9px]">Papihe System Rules:</span>
-                <p>• Minimum transfer eligibility trigger limit is set to 100 FC (₹1.00).</p>
-                <p>• Strict fraud detection block capping is set at ₹10.00 maximum per solar day.</p>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- ================= WITHDRAWAL FORM MODAL ================= -->
-    <div id="withdrawModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] hidden">
-        <div class="bg-zinc-950 border border-white/10 w-full max-w-sm rounded-3xl p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div class="flex justify-between items-center border-b border-white/5 pb-2">
-                <h3 class="text-sm font-black text-white uppercase tracking-wider">🔒 UPI Verification</h3>
-                <button onclick="closeWithdrawModal()" class="text-zinc-400 hover:text-white font-bold text-sm">✕</button>
-            </div>
-            
-            <p class="text-[11px] text-zinc-400">Payout secure karne ke liye apni sahi details bharein:</p>
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">Pura Naam (Full Name)</label>
-                    <input type="text" id="usrName" placeholder="Rahul Kumar" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">UPI ID</label>
-                    <input type="text" id="usrUpi" placeholder="username@apl" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="text-[10px] text-zinc-400 block font-bold mb-1 uppercase">Gmail Account</label>
-                    <input type="email" id="usrEmail" placeholder="example@gmail.com" class="w-full bg-zinc-900 border border-white/10 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
-                </div>
-            </div>
-
-            <div class="pt-2 grid grid-cols-2 gap-3">
-                <button onclick="closeWithdrawModal()" class="w-full bg-zinc-900 text-zinc-400 font-bold text-xs py-3 rounded-xl border border-white/5">
-                    Cancel
-                </button>
-                <button onclick="triggerWithdrawal()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs py-3 rounded-xl shadow-lg">
-                    Confirm & Payout
-                </button>
-            </div>
+    <div id="quizPage" class="page container">
+        <div class="card">
+            <h3 id="questionText">Question loading...</h3>
+            <div id="optionsContainer"></div>
+            <div id="feedback"></div>
+            <button class="btn" style="background:#6c757d; width:50%; margin-top:20px;" onclick="goToMain()">⬅ Back to Dashboard</button>
         </div>
     </div>
 
-    <!-- ================= FIXED BOTTOM NAV BAR ================= -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/80 backdrop-blur-lg border-t border-white/5 grid grid-cols-3 p-2 z-50">
-        <button onclick="switchTab('game', this)" class="nav-tab flex flex-col items-center justify-center py-1.5 text-amber-500 font-bold">
-            <span class="text-lg">🚀</span>
-            <span class="text-[10px] tracking-tight">Aviator</span>
-        </button>
-        <button onclick="switchTab('ads', this)" class="nav-tab flex flex-col items-center justify-center py-1.5 text-zinc-500 font-medium">
-            <span class="text-lg">📺</span>
-            <span class="text-[10px] tracking-tight">Earn Coins</span>
-        </button>
-        <button onclick="switchTab('wallet', this)" class="nav-tab flex flex-col items-center justify-center py-1.5 text-zinc-500 font-medium">
-            <span class="text-lg">💼</span>
-            <span class="text-[10px] tracking-tight">Wallet</span>
-        </button>
-    </nav>
+    <div id="wheelPage" class="page container">
+        <div class="card">
+            <h3>🎡 Lucky Spin Wheel</h3>
+            <p>Spin the wheel to earn direct Fluxaa Coins!</p>
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div id="wheel" class="main-wheel"></div>
+            </div>
+            <button class="btn" id="spinBtn" onclick="startSpinning()">Spin Now</button>
+            <br>
+            <button class="btn" style="background:#6c757d; width:50%; margin-top:10px;" onclick="goToMain()">⬅ Back to Dashboard</button>
+        </div>
+    </div>
 
-    <!-- ================= MECHANICS LOGIC CORE ================= -->
+    <div id="adOverlay" class="ad-overlay">
+        <button class="close-ad-btn" id="closeAdBtn" disabled onclick="closeAd()">Skip Ad in 5s...</button>
+        <div class="ad-box">
+            <iframe src="about:blank" id="adIframe" style="width:100%; height:100%; border:none;"></iframe>
+        </div>
+    </div>
+
     <script>
-        const GOOGLE_SHEET_WEBAPP_URL = "YOUR_WEB_APP_URL_HERE";
-
-        const canvas = document.getElementById('graphCanvas');
-        const ctx = canvas.getContext('2d');
+        let nextPageId = '';
+        let currentQuestionIndex = 0;
         
-        // FIXED: Responsive canvas dimensions calculation
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        // SAFE AD CODES (Adult links bypass karne ke liye safe dynamic text banner setup)
+        const safeAdContent = `
+            <div style="font-family:Arial; padding:20px; text-align:center; background:#1e293b; color:white; height:100%;">
+                <h2 style="color:#38ef7d; margin-top:50px;">🔥 Premium Offer!</h2>
+                <p>Install Top Earning Apps & Get 5000 Bonus Coins Instantly.</p>
+                <div style="background:#334155; padding:20px; border-radius:10px; margin:40px 10px;">
+                    <h3 style="margin:0;">Ludo Pro App</h3>
+                    <p style="font-size:12px; color:#cbd5e1;">Play games with real players securely.</p>
+                    <button style="background:#38ef7d; border:none; padding:10px 20px; font-weight:bold; border-radius:5px; cursor:pointer;">Download App</button>
+                </div>
+                <p style="font-size:11px; color:#94a3b8; margin-top:100px;">Sponsored Ad by Fluxaa Network</p>
+            </div>
+        `;
 
-        let gameState = {
-            balance: 100, // Testing ke liye initial balance 100 diya hai
-            betAmount: 10,
-            multiplier: 1.00,
-            status: 'IDLE', 
-            crashPoint: 0,
-            animationFrame: null,
-            timeElapsed: 0,
-            isWatchingAd: false,
-            adCooldownActive: false,
+        // Dummy Quiz Questions
+        const quizData = [
+            { q: "What is the capital of India?", os: ["Mumbai", "Delhi", "Kolkata", "Chennai"], a: "Delhi" },
+            { q: "Which coin is used in this app?", os: ["Bitcoin", "Fluxaa Coin", "Rupee", "Dollar"], a: "Fluxaa Coin" },
+            { q: "2 + 2 =", os: ["3", "4", "5", "6"], a: "4" }
+        ];
+
+        // FULL SCREEN AD CONTROLLER
+        function showAdAndNavigate(targetPage) {
+            nextPageId = targetPage;
+            const overlay = document.getElementById('adOverlay');
+            const closeBtn = document.getElementById('closeAdBtn');
+            const iframe = document.getElementById('adIframe').contentWindow.document;
             
-            adsViewedToday: 0,
-            maxAdsPerDay: 8,
-            isBonusClaimed: false,
+            // Safe content load karo iframe mein
+            iframe.open();
+            iframe.write(safeAdContent);
+            iframe.close();
+
+            overlay.style.display = 'flex';
             
-            dailyWithdrawnToday: 0,
-            maxDailyLimitINR: 10
-        };
-
-        function syncWithGoogleSheet(actionType, details) {
-            if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL === "YOUR_WEB_APP_URL_HERE") return;
-
-            fetch(GOOGLE_SHEET_WEBAPP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    actionType: actionType,
-                    balance: Math.round(gameState.balance),
-                    details: details
-                })
-            }).catch(err => console.log("Sheet Sync Error: ", err));
-        }
-
-        function switchTab(pageId, buttonElement) {
-            if (gameState.status === 'FLYING') {
-                alert("🔴 Flight running hai bhai! Pehle Cash out karo.");
-                return;
-            }
-
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('text-amber-500', 'font-bold');
-                btn.classList.add('text-zinc-500', 'font-medium');
-            });
-
-            if (pageId === 'game') {
-                document.getElementById('gamePage').classList.add('active');
-                document.getElementById('pageTitle').innerText = "Aviator Game";
-            } else if (pageId === 'ads') {
-                document.getElementById('adsPage').classList.add('active');
-                document.getElementById('pageTitle').innerText = "Coin Station";
-            } else if (pageId === 'wallet') {
-                document.getElementById('walletPage').classList.add('active');
-                document.getElementById('pageTitle').innerText = "Fluxaa Wallet";
-            }
-
-            buttonElement.classList.remove('text-zinc-500', 'font-medium');
-            buttonElement.classList.add('text-amber-500', 'font-bold');
-        }
-
-        function updateWalletUI() {
-            document.getElementById('globalBalance').innerText = Math.round(gameState.balance);
-            const inr = gameState.balance / 100;
-            document.getElementById('inrValue').innerText = "₹" + inr.toFixed(2);
-            document.getElementById('dailyWithdrawnDisplay').innerText = `₹${gameState.dailyWithdrawnToday.toFixed(2)} / ₹${gameState.maxDailyLimitINR}`;
-            document.getElementById('adCounterDisplay').innerText = `Ads: ${gameState.adsViewedToday} / ${gameState.maxAdsPerDay}`;
-            
-            if (gameState.adsViewedToday >= gameState.maxAdsPerDay) {
-                const adBtn = document.getElementById('adBtn');
-                adBtn.disabled = true;
-                adBtn.className = "w-full bg-red-950/40 text-red-400 border border-red-900/50 font-mono text-xs py-3 rounded-xl text-center cursor-not-allowed";
-                adBtn.innerText = "🛑 Daily Ad Limit Reached (8/8)";
-            }
-
-            if (gameState.isBonusClaimed) {
-                const bonusBtn = document.getElementById('bonusBtn');
-                bonusBtn.disabled = true;
-                bonusBtn.className = "bg-zinc-800 text-zinc-500 border border-zinc-700 font-bold text-[10px] px-3 py-2 rounded-xl cursor-not-allowed";
-                bonusBtn.innerText = "CLAIMED ✓";
-                document.getElementById('bonusCard').className = "bg-zinc-900/40 border border-white/5 p-4 rounded-3xl flex justify-between items-center opacity-60";
-            }
-        }
-
-        function openWithdrawModal() {
-            const currentCoins = Math.round(gameState.balance);
-            if (currentCoins < 100) {
-                alert(`⚠️ Error: Minimum withdrawal limit ₹1 (100 FC) hai!`);
-                return;
-            }
-            const allowedTodayINR = gameState.maxDailyLimitINR - gameState.dailyWithdrawnToday;
-            if (allowedTodayINR <= 0) {
-                alert(`🛑 Daily Limit Reached! Aaj ka payout ho chuka hai.`);
-                return;
-            }
-            document.getElementById('withdrawModal').classList.remove('hidden');
-        }
-
-        function closeWithdrawModal() {
-            document.getElementById('withdrawModal').classList.add('hidden');
-        }
-
-        function claimDailyBonus() {
-            if (gameState.isBonusClaimed) return;
-            gameState.balance += 10;
-            gameState.isBonusClaimed = true;
-            updateWalletUI();
-            alert("🎉 Badhai ho! Aaj ka Free Daily Bonus (+10 FC) mil gaya hai.");
-            syncWithGoogleSheet("CLAIM_BONUS", "Claimed 10 Free Coins Daily Bonus");
-        }
-
-        function watchVideoAd() {
-            if (gameState.isWatchingAd || gameState.adCooldownActive) return;
-            if (gameState.adsViewedToday >= gameState.maxAdsPerDay) return;
-
-            gameState.isWatchingAd = true;
-            const adBtn = document.getElementById('adBtn');
-            try { (function(s){ s.dataset.zone='11130226'; s.src='https://n6wxm.com/vignette.min.js'; })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script'))); } catch (e) {}
+            // 5 Seconds Ad Countdown Timer
             let timeLeft = 5;
-
-            adBtn.disabled = true;
-            adBtn.className = "w-full bg-zinc-800 text-zinc-500 font-mono text-xs py-3.5 rounded-xl border border-zinc-700 cursor-not-allowed text-center";
-            adBtn.innerText = `⏳ Streaming Advertisement... (${timeLeft}s)`;
-
-            const adInterval = setInterval(() => {
+            closeBtn.disabled = true;
+            closeBtn.innerText = `Skip Ad in ${timeLeft}s...`;
+            
+            const timer = setInterval(() => {
                 timeLeft--;
-                if (timeLeft > 0) {
-                    adBtn.innerText = `📺 Playing Fluxaa Ad Sponsor... (${timeLeft}s)`;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    closeBtn.disabled = false;
+                    closeBtn.innerText = "✖ Skip Ad";
                 } else {
-                    clearInterval(adInterval);
-                    gameState.adsViewedToday++;
-                    gameState.balance += 10;
-                    updateWalletUI();
-                    gameState.isWatchingAd = false;
-                    
-                    syncWithGoogleSheet("WATCH_AD", `Watched Ad #${gameState.adsViewedToday}. Earned 10 FC`);
-
-                    if (gameState.adsViewedToday < gameState.maxAdsPerDay) {
-                        triggerAdCooldown(30);
-                    }
+                    closeBtn.innerText = `Skip Ad in ${timeLeft}s...`;
                 }
             }, 1000);
         }
 
-        function triggerAdCooldown(seconds) {
-            gameState.adCooldownActive = true;
-            const adBtn = document.getElementById('adBtn');
-            const timerLabel = document.getElementById('adTimerLabel');
-            let cooldownLeft = seconds;
+        function closeAd() {
+            document.getElementById('adOverlay').style.style.display = 'none';
+            // Ad close hote hi naye alag page par bhej dega
+            switchPage(nextPageId);
+        }
 
-            adBtn.disabled = true;
-            adBtn.classList.add('btn-cooldown');
-            adBtn.innerText = `🔒 Lock: Next Ad available in ${cooldownLeft}s`;
-            timerLabel.classList.remove('hidden');
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if(pageId === 'quizPage') {
+                currentQuestionIndex = 0;
+                loadQuestion();
+            }
+        }
 
-            const cooldownInterval = setInterval(() => {
-                cooldownLeft--;
-                if (cooldownLeft > 0) {
-                    adBtn.innerText = `🔒 Lock: Next Ad available in ${cooldownLeft}s`;
+        function goToMain() {
+            switchPage('mainPage');
+        }
+
+        // SEPARATE QUIZ SYSTEM
+        function loadQuestion() {
+            document.getElementById('feedback').innerText = "";
+            let currentQ = quizData[currentQuestionIndex];
+            document.getElementById('questionText').innerText = currentQ.q;
+            
+            let optionsHtml = "";
+            currentQ.os.forEach(opt => {
+                optionsHtml += `<button class="option-btn" onclick="checkAnswer('${opt}')">${opt}</button>`;
+            });
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+        }
+
+        function checkAnswer(selectedOption) {
+            let currentQ = quizData[currentQuestionIndex];
+            let feedbackBox = document.getElementById('feedback');
+            
+            if(selectedOption === currentQ.a) {
+                feedbackBox.innerHTML = "<span class='correct'>✅ Correct Answer! (+10 Coins)</span>";
+            } else {
+                feedbackBox.innerHTML = "<span class='wrong'>❌ Wrong Answer! Try Next</span>";
+            }
+
+            // 2 Second baad agla sawal load hoga automatic
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if(currentQuestionIndex < quizData.length) {
+                    loadQuestion();
                 } else {
-                    clearInterval(cooldownInterval);
-                    gameState.adCooldownActive = false;
-                    
-                    if (gameState.adsViewedToday < gameState.maxAdsPerDay) {
-                        adBtn.disabled = false;
-                        adBtn.classList.remove('btn-cooldown');
-                        adBtn.className = "w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg text-center";
-                        adBtn.innerText = "📺 Watch Video Ad (+10 FC)";
-                    }
-                    timerLabel.classList.add('hidden');
+                    document.getElementById('questionText').innerText = "🎉 Quiz Completed Successfully!";
+                    document.getElementById('optionsContainer').innerHTML = "";
+                    feedbackBox.innerText = "All coins credited to your Fluxaa wallet.";
                 }
-            }, 1000);
+            }, 2000);
         }
 
-        function setBetAmount(amt) {
-            if(gameState.status === 'FLYING') return;
-            document.getElementById('betInput').value = amt;
-        }
-
-        function handlePrimaryAction() {
-            const betInputVal = Math.floor(parseFloat(document.getElementById('betInput').value)) || 0;
-
-            if (gameState.status === 'IDLE' || gameState.status === 'CRASHED' || gameState.status === 'CASHED_OUT') {
-                if (betInputVal > gameState.balance) {
-                    alert("Coins nahi hain bhai! EARN COINS waale page par jaakar bonus ya ad collect karo.");
-                    return;
-                }
-                if (betInputVal < 1) return;
-
-                gameState.betAmount = betInputVal;
-                gameState.balance -= gameState.betAmount;
-                updateWalletUI();
-                launchSequence();
-            } else if (gameState.status === 'FLYING') {
-                executeCashOut();
-            }
-        }
-
-        function launchSequence() {
-            gameState.status = 'FLYING';
-            gameState.multiplier = 1.00;
-            gameState.timeElapsed = 0;
+        // CLEAN SPIN WHEEL SYSTEM (No dirty redirects)
+        let isSpinning = false;
+        function startSpinning() {
+            if (isSpinning) return;
+            isSpinning = true;
             
-            const rand = Math.random();
-            if (rand < 0.18) { gameState.crashPoint = 1.00 + Math.random() * 0.04; }
-            else if (rand < 0.78) { gameState.crashPoint = 1.05 + Math.random() * 1.6; }
-            else { gameState.crashPoint = 2.65 + Math.random() * 6.5; }
-
-            document.getElementById('statusLabel').innerText = "Flight in Progress...";
-            document.getElementById('statusLabel').className = "text-[10px] text-red-500 font-mono tracking-widest uppercase mt-1 font-bold animate-pulse";
+            const wheel = document.getElementById('wheel');
+            const randomDegrees = Math.floor(Math.random() * 360) + 1800; // Extra rounds for cool effect
             
-            const btn = document.getElementById('actionBtn');
-            btn.innerText = "💥 CASH OUT";
-            btn.className = "w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black text-sm uppercase tracking-widest py-4 rounded-2xl shadow-xl transition-all";
-
-            runFlightAnimation();
-        }
-
-        function runFlightAnimation() {
-            if (gameState.status !== 'FLYING') return;
-            gameState.timeElapsed += 0.016; 
-            gameState.multiplier = 1.00 + Math.pow(gameState.timeElapsed, 1.8) * 0.4;
-            document.getElementById('multiplierDisplay').innerText = gameState.multiplier.toFixed(2) + "x";
-
-            drawGraphCurve(gameState.timeElapsed);
-
-            if (gameState.multiplier >= gameState.crashPoint) {
-                gameState.status = 'CRASHED';
-                document.getElementById('multiplierDisplay').innerText = "FLEW AWAY!";
-                pushHistoryLog(gameState.crashPoint.toFixed(2), 'red');
-                resetControlButtons();
-
-                syncWithGoogleSheet("GAME_CRASH", `Lost ${gameState.betAmount} FC on ${gameState.crashPoint.toFixed(2)}x`);
-                return;
-            }
-            gameState.animationFrame = requestAnimationFrame(runFlightAnimation);
-        }
-
-        // FIXED: Smooth Canvas Curve Scaling taaki plane bound ke baahar na freeze ho
-        function drawGraphCurve(time) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let startX = 30, startY = canvas.height - 30;
+            wheel.style.transform = `rotate(${randomDegrees}deg)`;
             
-            // Scaling factor lagaya taaki screen ke hisab se curve adjust ho
-            let scaleX = Math.min(32, (canvas.width - 60) / Math.max(time, 1));
-            let scaleY = Math.min(9, (canvas.height - 60) / Math.max(Math.pow(time, 1.8), 1));
-
-            let endX = startX + (time * scaleX);
-            let endY = startY - (Math.pow(time, 1.8) * scaleY);
-
-            ctx.beginPath(); 
-            ctx.moveTo(startX, startY);
-            ctx.quadraticCurveTo(startX + (endX - startX)/2, startY, endX, endY);
-            ctx.strokeStyle = '#ef4444'; 
-            ctx.lineWidth = 4; 
-            ctx.stroke();
-
-            ctx.save(); 
-            ctx.font = "24px Arial"; 
-            ctx.textAlign = "center"; 
-            ctx.textBaseline = "middle";
-            ctx.translate(endX, endY); 
-            ctx.fillText("✈️", 0, 0); 
-            ctx.restore();
+            setTimeout(() => {
+                isSpinning = false;
+                alert("🎉 Congratulations! You won Fluxaa Coins.");
+                // Reset rotation cleanly for next turn
+                wheel.style.transition = 'none';
+                wheel.style.transform = `rotate(${randomDegrees % 360}deg)`;
+                setTimeout(() => { wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.1, 1)'; }, 50);
+            }, 4000);
         }
-
-        function executeCashOut() {
-            gameState.status = 'CASHED_OUT';
-            cancelAnimationFrame(gameState.animationFrame);
-            // FIXED: Float accuracy math rounding lagayi hai
-            const profitCoins = Math.round(gameState.betAmount * gameState.multiplier);
-            gameState.balance += profitCoins;
-            updateWalletUI();
-            pushHistoryLog(gameState.multiplier.toFixed(2), 'emerald');
-            resetControlButtons();
-            alert(`🎉 Success! Tumne ${profitCoins} FC secure kar liye.`);
-
-            syncWithGoogleSheet("GAME_WIN", `Bet: ${gameState.betAmount} FC, Cashed out at: ${gameState.multiplier.toFixed(2)}x, Won: ${profitCoins} FC`);
-        }
-
-        function resetControlButtons() {
-            const btn = document.getElementById('actionBtn');
-            btn.innerText = "🛫 Place Bet & Launch";
-            btn.className = "w-full bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-sm uppercase tracking-widest py-4 rounded-2xl shadow-xl transition-all";
-        }
-
-        function pushHistoryLog(val, color) {
-            const strip = document.getElementById('historyStrip');
-            const bgClass = color === 'red' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
-            const badge = document.createElement('span');
-            badge.className = `${bgClass} border font-mono text-[10px] px-2.5 py-1 rounded-lg font-bold`;
-            badge.innerText = val + "x";
-            strip.insertBefore(badge, strip.firstChild);
-        }
-
-        function triggerWithdrawal() {
-            const name = document.getElementById('usrName').value.trim();
-            const upi = document.getElementById('usrUpi').value.trim();
-            const email = document.getElementById('usrEmail').value.trim();
-
-            if (!name || !upi || !email) {
-                alert("⚠️ Bhai pehle saari details dhang se fill karo!");
-                return;
-            }
-
-            const currentCoins = Math.round(gameState.balance);
-            const requestedINR = currentCoins / 100;
-
-            const allowedTodayINR = gameState.maxDailyLimitINR - gameState.dailyWithdrawnToday;
-            if (allowedTodayINR <= 0) {
-                alert(`🛑 Daily Limit Reached! Aaj ka payout ho chuka hai.`);
-                closeWithdrawModal();
-                return;
-            }
-
-            let finalWithdrawINR = requestedINR;
-            let coinsToDeduct = currentCoins;
-            if (requestedINR > allowedTodayINR) {
-                finalWithdrawINR = allowedTodayINR;
-                coinsToDeduct = allowedTodayINR * 100;
-            }
-
-            gameState.dailyWithdrawnToday += finalWithdrawINR;
-            gameState.balance -= coinsToDeduct;
-            updateWalletUI();
-            
-            closeWithdrawModal();
-            document.getElementById('usrName').value = "";
-            document.getElementById('usrUpi').value = "";
-            document.getElementById('usrEmail').value = "";
-
-            alert(`✅ Success! ₹${finalWithdrawINR.toFixed(2)} ka instant payout process ho gaya.`);
-
-            const sheetLogDetails = `User: ${name} | UPI: ${upi} | Mail: ${email} | Amount: ₹${finalWithdrawINR.toFixed(2)} (Deducted ${coinsToDeduct} FC)`;
-            syncWithGoogleSheet("WITHDRAWAL", sheetLogDetails);
-        }
-
-        updateWalletUI();
     </script>
 </body>
 </html>
