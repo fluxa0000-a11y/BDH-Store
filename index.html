@@ -1,325 +1,137 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>₣ Fluxaa - Play & Earn</title>
+    <title>Gold Ledger Pro</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Gold Ledger">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <style>
-        :root {
-            --primary: #1e3c72;
-            --secondary: #2a5298;
-            --success: #11998e;
-            --danger: #ea2027;
-            --light: #f8f9fa;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light);
-            color: #333;
-            text-align: center;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .btn {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            width: 80%;
-            margin: 10px 0;
-        }
-        .btn:hover { transform: scale(1.03); }
-        
-        /* FULL SCREEN BANNER AD MODAL */
-        .ad-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .ad-box {
-            background: white;
-            width: 90%;
-            max-width: 360px;
-            height: 80vh;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-        .close-ad-btn {
-            position: absolute;
-            top: 10px; right: 10px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* SEPARATE PAGES CONTROL */
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* QUIZ STYLING */
-        .option-btn {
-            background: #f0f2f5;
-            color: #333;
-            border: 2px solid #e4e6eb;
-            padding: 12px;
-            width: 100%;
-            margin: 8px 0;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-            text-align: left;
-            font-weight: bold;
-        }
-        #feedback {
-            margin-top: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .correct { color: var(--success); }
-        .wrong { color: var(--danger); }
-
-        /* SPIN WHEEL STYLING */
-        .wheel-container {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            margin: 30px auto;
-        }
-        .main-wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 8px solid var(--primary);
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
-            background: conic-gradient(
-                #ff7675 0deg 60deg, #74b9ff 60deg 120deg, 
-                #55efc4 120deg 180deg, #ffeaa7 180deg 240deg, 
-                #a29bfe 240deg 300deg, #fd79a8 300deg 360deg
-            );
-        }
-        .wheel-pointer {
-            position: absolute;
-            top: -15px; left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 25px solid var(--danger);
-            z-index: 10;
-        }
+        :root { --gold: #D4AF37; --bg: #000; --card: #1a1a1a; --text: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .page { display: none; } .active { display: block; }
+        .card { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--gold); cursor: pointer; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; box-sizing: border-box; }
+        .btn { background: var(--gold); border: none; padding: 12px; border-radius: 10px; cursor: pointer; color: #000; font-weight: bold; width: 100%; margin-top: 10px; }
+        .fab { position: fixed; bottom: 30px; right: 30px; background: var(--gold); width: 60px; height: 60px; border-radius: 50%; font-size: 30px; text-align: center; line-height: 60px; color: #000; cursor: pointer; box-shadow: 0 4px 10px rgba(212,175,55,0.4); }
+        h1 { color: var(--gold); text-align: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header>₣ Fluxaa</header>
+<div id="lockPage" class="page active">
+    <h1>🪙 Gold Ledger</h1>
+    <input type="password" id="mainPass" placeholder="Enter Password">
+    <button class="btn" onclick="checkLock()">Unlock App</button>
+</div>
 
-    <div id="mainPage" class="page active container">
-        <div class="card">
-            <h2>Welcome to ₣ Fluxaa Dashboard</h2>
-            <p>Complete tasks safely and cash out via UPI.</p>
-        </div>
-        <button class="btn" onclick="showAdAndNavigate('quizPage')">🎯 Start Premium Quiz</button>
-        <button class="btn" onclick="showAdAndNavigate('wheelPage')">🎡 Spin Lucky Wheel</button>
-    </div>
+<div id="homePage" class="page">
+    <h1 onclick="adminTap()">🪙 Gold</h1>
+    <input type="text" id="searchInput" placeholder="Search by Date or Amount..." oninput="render()">
+    <div id="ticketList"></div>
+    <div class="fab" onclick="showPage('formPage')">+</div>
+</div>
 
-    <div id="quizPage" class="page container">
-        <div class="card">
-            <h3 id="questionText">Question loading...</h3>
-            <div id="optionsContainer"></div>
-            <div id="feedback"></div>
-            <button class="btn" style="background:#6c757d; width:50%; margin-top:20px;" onclick="goToMain()">⬅ Back to Dashboard</button>
-        </div>
-    </div>
+<div id="formPage" class="page">
+    <h2>Add New Ticket</h2>
+    <input type="date" id="tDate">
+    <input type="number" id="tGrams" placeholder="Gold Weight (Grams)">
+    <input type="number" id="tAmount" placeholder="Principal Amount">
+    <button class="btn" onclick="saveTicket()">Save Ticket</button>
+    <button class="btn" style="background:#444; color:#fff" onclick="showPage('homePage')">Cancel</button>
+</div>
 
-    <div id="wheelPage" class="page container">
-        <div class="card">
-            <h3>🎡 Lucky Spin Wheel</h3>
-            <p>Spin the wheel to earn direct Fluxaa Coins!</p>
-            <div class="wheel-container">
-                <div class="wheel-pointer"></div>
-                <div id="wheel" class="main-wheel"></div>
-            </div>
-            <button class="btn" id="spinBtn" onclick="startSpinning()">Spin Now</button>
-            <br>
-            <button class="btn" style="background:#6c757d; width:50%; margin-top:10px;" onclick="goToMain()">⬅ Back to Dashboard</button>
-        </div>
-    </div>
+<div id="detailsPage" class="page">
+    <h2>Ticket Details</h2>
+    <div id="detailsContent" class="card"></div>
+    <button class="btn" style="background:#800; color:#fff" onclick="deleteTicket()">Delete Ticket</button>
+    <button class="btn" onclick="showPage('homePage')">Back</button>
+</div>
 
-    <div id="adOverlay" class="ad-overlay">
-        <button class="close-ad-btn" id="closeAdBtn" disabled onclick="closeAd()">Skip Ad in 5s...</button>
-        <div class="ad-box">
-            <iframe src="about:blank" id="adIframe" style="width:100%; height:100%; border:none;"></iframe>
-        </div>
-    </div>
+<script>
+    let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+    let currentIdx = null;
+    let tapCount = 0;
 
-    <script>
-        let nextPageId = '';
-        let currentQuestionIndex = 0;
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'homePage') render();
+    }
+
+    function checkLock() {
+        if(document.getElementById('mainPass').value === '19Feb1967') showPage('homePage');
+        else alert('Wrong Password');
+    }
+
+    function saveTicket() {
+        tickets.push({ 
+            date: document.getElementById('tDate').value, 
+            grams: document.getElementById('tGrams').value, 
+            principal: parseFloat(document.getElementById('tAmount').value)
+        });
+        localStorage.setItem('tickets', JSON.stringify(tickets));
+        showPage('homePage');
+    }
+
+    function openDetails(idx) {
+        currentIdx = idx;
+        let t = tickets[idx];
+        let startDate = new Date(t.date);
+        let now = new Date();
+        let displayDate = now.getDate() + '-' + (now.getMonth() + 1) + '-' + now.getFullYear();
         
-        // SAFE AD CODES (Adult links bypass karne ke liye safe dynamic text banner setup)
-        const safeAdContent = `
-            <div style="font-family:Arial; padding:20px; text-align:center; background:#1e293b; color:white; height:100%;">
-                <h2 style="color:#38ef7d; margin-top:50px;">🔥 Premium Offer!</h2>
-                <p>Install Top Earning Apps & Get 5000 Bonus Coins Instantly.</p>
-                <div style="background:#334155; padding:20px; border-radius:10px; margin:40px 10px;">
-                    <h3 style="margin:0;">Ludo Pro App</h3>
-                    <p style="font-size:12px; color:#cbd5e1;">Play games with real players securely.</p>
-                    <button style="background:#38ef7d; border:none; padding:10px 20px; font-weight:bold; border-radius:5px; cursor:pointer;">Download App</button>
-                </div>
-                <p style="font-size:11px; color:#94a3b8; margin-top:100px;">Sponsored Ad by Fluxaa Network</p>
-            </div>
-        `;
+        let diffInMs = now - startDate;
+        let totalDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+        
+        let years = Math.floor(totalDays / 365);
+        let remainingDays = totalDays % 365;
+        let months = Math.floor(remainingDays / 30);
+        let days = remainingDays % 30;
 
-        // Dummy Quiz Questions
-        const quizData = [
-            { q: "What is the capital of India?", os: ["Mumbai", "Delhi", "Kolkata", "Chennai"], a: "Delhi" },
-            { q: "Which coin is used in this app?", os: ["Bitcoin", "Fluxaa Coin", "Rupee", "Dollar"], a: "Fluxaa Coin" },
-            { q: "2 + 2 =", os: ["3", "4", "5", "6"], a: "4" }
-        ];
+        let balance = parseFloat(t.principal);
+        for(let i = 0; i < years; i++) balance += (balance * 0.18);
+        balance += (balance * (0.015 * months));
+        balance += (balance * ((0.015 / 30) * days));
+        
+        document.getElementById('detailsContent').innerHTML = 
+            `<p><strong>Ticket Date:</strong> ${t.date}</p>
+             <p><strong>Calculation Date:</strong> ${displayDate}</p>
+             <p><strong>Gold Weight:</strong> ${t.grams} Grams</p>
+             <p><strong>Principal:</strong> ₹${t.principal}</p>
+             <p><strong>Time:</strong> ${years}y, ${months}m, ${days}d</p>
+             <p><strong>Interest:</strong> ₹${(balance - t.principal).toFixed(2)}</p>
+             <h3>Total Payable: ₹${balance.toFixed(2)}</h3>`;
+        showPage('detailsPage');
+    }
 
-        // FULL SCREEN AD CONTROLLER
-        function showAdAndNavigate(targetPage) {
-            nextPageId = targetPage;
-            const overlay = document.getElementById('adOverlay');
-            const closeBtn = document.getElementById('closeAdBtn');
-            const iframe = document.getElementById('adIframe').contentWindow.document;
-            
-            // Safe content load karo iframe mein
-            iframe.open();
-            iframe.write(safeAdContent);
-            iframe.close();
+    function render() {
+        let q = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = tickets.filter(t => t.date.includes(q) || t.principal.toString().includes(q));
+        document.getElementById('ticketList').innerHTML = filtered.map((t, idx) => 
+            `<div class='card' onclick="openDetails(${tickets.indexOf(t)})">
+                Date: ${t.date} | Gold: ${t.grams}g | ₹${t.principal}
+             </div>`
+        ).join('');
+    }
 
-            overlay.style.display = 'flex';
-            
-            // 5 Seconds Ad Countdown Timer
-            let timeLeft = 5;
-            closeBtn.disabled = true;
-            closeBtn.innerText = `Skip Ad in ${timeLeft}s...`;
-            
-            const timer = setInterval(() => {
-                timeLeft--;
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    closeBtn.disabled = false;
-                    closeBtn.innerText = "✖ Skip Ad";
-                } else {
-                    closeBtn.innerText = `Skip Ad in ${timeLeft}s...`;
-                }
-            }, 1000);
+    function deleteTicket() {
+        if(confirm("Delete this ticket?")) {
+            tickets.splice(currentIdx, 1);
+            localStorage.setItem('tickets', JSON.stringify(tickets));
+            showPage('homePage');
         }
+    }
 
-        function closeAd() {
-            document.getElementById('adOverlay').style.style.display = 'none';
-            // Ad close hote hi naye alag page par bhej dega
-            switchPage(nextPageId);
-        }
-
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            if(pageId === 'quizPage') {
-                currentQuestionIndex = 0;
-                loadQuestion();
-            }
-        }
-
-        function goToMain() {
-            switchPage('mainPage');
-        }
-
-        // SEPARATE QUIZ SYSTEM
-        function loadQuestion() {
-            document.getElementById('feedback').innerText = "";
-            let currentQ = quizData[currentQuestionIndex];
-            document.getElementById('questionText').innerText = currentQ.q;
-            
-            let optionsHtml = "";
-            currentQ.os.forEach(opt => {
-                optionsHtml += `<button class="option-btn" onclick="checkAnswer('${opt}')">${opt}</button>`;
-            });
-            document.getElementById('optionsContainer').innerHTML = optionsHtml;
-        }
-
-        function checkAnswer(selectedOption) {
-            let currentQ = quizData[currentQuestionIndex];
-            let feedbackBox = document.getElementById('feedback');
-            
-            if(selectedOption === currentQ.a) {
-                feedbackBox.innerHTML = "<span class='correct'>✅ Correct Answer! (+10 Coins)</span>";
-            } else {
-                feedbackBox.innerHTML = "<span class='wrong'>❌ Wrong Answer! Try Next</span>";
-            }
-
-            // 2 Second baad agla sawal load hoga automatic
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if(currentQuestionIndex < quizData.length) {
-                    loadQuestion();
-                } else {
-                    document.getElementById('questionText').innerText = "🎉 Quiz Completed Successfully!";
-                    document.getElementById('optionsContainer').innerHTML = "";
-                    feedbackBox.innerText = "All coins credited to your Fluxaa wallet.";
-                }
-            }, 2000);
-        }
-
-        // CLEAN SPIN WHEEL SYSTEM (No dirty redirects)
-        let isSpinning = false;
-        function startSpinning() {
-            if (isSpinning) return;
-            isSpinning = true;
-            
-            const wheel = document.getElementById('wheel');
-            const randomDegrees = Math.floor(Math.random() * 360) + 1800; // Extra rounds for cool effect
-            
-            wheel.style.transform = `rotate(${randomDegrees}deg)`;
-            
-            setTimeout(() => {
-                isSpinning = false;
-                alert("🎉 Congratulations! You won Fluxaa Coins.");
-                // Reset rotation cleanly for next turn
-                wheel.style.transition = 'none';
-                wheel.style.transform = `rotate(${randomDegrees % 360}deg)`;
-                setTimeout(() => { wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.1, 1)'; }, 50);
-            }, 4000);
-        }
-    </script>
+    function adminTap() {
+        tapCount++;
+        if(tapCount >= 5) { alert("Total Tickets: " + tickets.length); tapCount = 0; }
+    }
+    render();
+</script>
 </body>
 </html>
