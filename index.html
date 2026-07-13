@@ -129,7 +129,42 @@
 
     function adminTap() {
         tapCount++;
-        if(tapCount >= 5) { alert("Total Tickets: " + tickets.length); tapCount = 0; }
+        if(tapCount >= 5) {
+            let pass = prompt("Admin Password:");
+            if(pass === 'ashokkumar1967') {
+                let totalGrams = 0;
+                let totalPrincipal = 0;
+                let totalInterest = 0;
+                let now = new Date();
+
+                tickets.forEach(t => {
+                    let startDate = new Date(t.date);
+                    let diffInMs = now - startDate;
+                    let totalDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                    
+                    let years = Math.floor(totalDays / 365);
+                    let remainingDays = totalDays % 365;
+                    let months = Math.floor(remainingDays / 30);
+                    let days = remainingDays % 30;
+
+                    let balance = parseFloat(t.principal);
+                    for(let i = 0; i < years; i++) balance += (balance * 0.18);
+                    balance += (balance * (0.015 * months));
+                    balance += (balance * ((0.015 / 30) * days));
+                    
+                    totalGrams += parseFloat(t.grams || 0);
+                    totalPrincipal += parseFloat(t.principal || 0);
+                    totalInterest += (balance - parseFloat(t.principal));
+                });
+
+                alert("--- Ledger Summary ---\n" +
+                      "Total Tickets: " + tickets.length + "\n" +
+                      "Total Gold: " + totalGrams.toFixed(2) + " Grams\n" +
+                      "Total Principal: ₹" + totalPrincipal.toLocaleString('en-IN') + "\n" +
+                      "Total Interest: ₹" + totalInterest.toFixed(2));
+            }
+            tapCount = 0;
+        }
     }
     render();
 </script>
